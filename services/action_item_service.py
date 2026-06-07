@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from extensions import db
 from models.action_item import ActionItem
+from services.relationship_service import RelationshipService
 
 
 class ActionItemService:
@@ -27,6 +28,9 @@ class ActionItemService:
         )
         db.session.add(a)
         db.session.commit()
+        # Update relationship metrics if this action item is linked to a participant
+        if participant_id:
+            RelationshipService.update_relationship(user_id, participant_id)
         return a
 
     @staticmethod
@@ -58,4 +62,7 @@ class ActionItemService:
         a = ActionItem.query.filter_by(id=item_id, user_id=user_id).first_or_404()
         a.status = status
         db.session.commit()
+        # Update relationship metrics if linked
+        if a.participant_id:
+            RelationshipService.update_relationship(user_id, a.participant_id)
         return a

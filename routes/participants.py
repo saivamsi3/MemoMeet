@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from extensions import db
 from models.participant import Participant
+from models.relationship import Relationship
+from services.timeline_service import TimelineService
 
 participants_bp = Blueprint("participants", __name__)
 
@@ -71,7 +73,10 @@ def edit_participant(id):
 @login_required
 def participant_details(id):
     participant = Participant.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    return render_template("participants/participant_details.html", participant=participant)
+    # load related meetings and relationship data
+    meetings = TimelineService.get_meetings_for_participant(participant.id, current_user.id)
+    relationship = Relationship.query.filter_by(participant_id=participant.id, user_id=current_user.id).first()
+    return render_template("participants/participant_details.html", participant=participant, meetings=meetings, relationship=relationship)
 
 
 @participants_bp.route("/participants/<int:id>/delete")

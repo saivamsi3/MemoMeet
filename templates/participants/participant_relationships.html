@@ -10,4 +10,46 @@
     <h1 class="h2">Relationship Insights</h1>
 </div>
 <p class="text-muted">Relationship data and insights for this participant.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Summary</div>
+            <div class="card-body">
+                {% if relationship %}
+                    <h3 class="text-center">{{ "%.1f"|format(relationship.health_score) }} / 10</h3>
+                    <p><strong>Meetings:</strong> {{ relationship.meeting_count }}</p>
+                    <p><strong>Engagement:</strong> {{ "%.0f"|format(relationship.engagement_level * 100) }}%</p>
+                    <p><strong>Task Completion:</strong> {{ "%.0f"|format(relationship.task_completion_rate * 100) }}%</p>
+                {% else %}
+                    <p class="text-muted">No relationship data yet. Start by creating meetings or assigning tasks for this participant.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Activity</div>
+            <div class="card-body">
+                {% if meetings and meetings|length > 0 %}
+                    <ul class="list-group">
+                        {% for m in meetings %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ m.title }}</strong>
+                                        <div class="text-muted small">{{ m.date.strftime('%Y-%m-%d') }}</div>
+                                    </div>
+                                    <a href="{{ url_for('meetings.meeting_details', id=m.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No meetings found for this participant.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
