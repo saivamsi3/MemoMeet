@@ -3,12 +3,24 @@ body {
     background-color: var(--bg-primary) !important;
     color: var(--text-primary);
     transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     color: var(--text-primary);
+}
+
+/* Glassmorphism styling helper */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed) var(--transition-bounce), box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
 }
 
 /* Base card improvements */
@@ -33,23 +45,26 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
     font-family: var(--font-heading);
     font-weight: 600;
+    padding: 1rem 1.25rem;
 }
 
 /* Interactive custom styles for buttons */
 .btn {
     border-radius: var(--radius-sm);
     font-weight: 500;
+    padding: 0.5rem 1.25rem;
     transition: all var(--transition-speed) ease;
 }
 
 .btn-primary {
     background-color: var(--primary);
     border-color: var(--primary);
+    color: #ffffff;
 }
 
 .btn-primary:hover, .btn-primary:focus {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
     box-shadow: var(--shadow-glow);
 }
 
@@ -61,6 +76,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-outline-primary:hover {
     background-color: var(--primary);
     border-color: var(--primary);
+    color: #ffffff;
 }
 
 /* Form Styles */
@@ -90,8 +106,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Layout adjustments */
 .navbar {
     height: var(--navbar-height);
-    background-color: var(--bg-card) !important;
-    border-bottom: 1px solid var(--border-color);
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--shadow-sm);
     z-index: 1020;
 }
@@ -111,8 +129,10 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 100;
     width: var(--sidebar-width);
     overflow-y: auto;
-    background-color: var(--bg-card);
-    border-right: 1px solid var(--border-color);
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid var(--glass-border);
     padding: 1.5rem 0.5rem;
     transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
@@ -136,14 +156,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar .nav-link.active {
     color: #ffffff !important;
-    background-color: var(--primary);
+    background-color: var(--primary) !important;
     box-shadow: var(--shadow-glow);
 }
 
 main {
     margin-top: var(--navbar-height);
     margin-left: var(--sidebar-width);
-    padding: 2rem;
+    padding: 2.5rem;
     min-height: calc(100vh - var(--navbar-height));
     transition: margin-left var(--transition-speed) ease;
 }
@@ -181,6 +201,20 @@ main {
     bottom: 0;
     width: 2px;
     background: var(--border-color);
+}
+
+/* List group style updates */
+.list-group-item {
+    background-color: transparent;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    padding: 1rem 1.25rem;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.list-group-item:hover {
+    background-color: var(--bg-secondary);
+    color: var(--primary);
 }
 
 @media (max-width: 767.98px) {

@@ -1,34 +1,47 @@
 {% extends "layout/base.html" %}
 {% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/auth.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block auth_content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h3 class="text-center mb-4"><i class="bi bi-journal-text me-2"></i>MemoMeet</h3>
-                    <h5 class="text-center text-muted mb-4">Create Account</h5>
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
-                    <p class="text-center mt-3">
-                        Already have an account? <a href="{{ url_for('auth.login') }}">Login</a>
-                    </p>
-                </div>
-            </div>
+<div class="auth-page">
+    <div class="auth-card card">
+        <div class="text-center mb-4">
+            <h1 class="auth-logo mb-2">
+                <i class="bi bi-journal-text text-primary"></i>MemoMeet
+            </h1>
+            <p class="text-muted small">AI-Powered Relationship & Meeting Intelligence</p>
         </div>
+        
+        <h4 class="mb-4 font-heading text-center">Create Account</h4>
+        
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username" required autocomplete="username">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="name@company.com" required autocomplete="email">
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="At least 8 characters" required autocomplete="new-password">
+                <div class="form-text text-muted small">Must be at least 8 characters long.</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-2.5 mb-3">
+                <i class="bi bi-person-plus-fill me-1"></i> Register
+            </button>
+        </form>
+        
+        <p class="text-center mt-3 mb-0 small text-secondary">
+            Already have an account? <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-semibold">Sign In</a>
+        </p>
     </div>
 </div>
 {% endblock %}

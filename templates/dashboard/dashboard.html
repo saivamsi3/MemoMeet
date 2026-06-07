@@ -1,98 +1,133 @@
 {% extends "layout/base.html" %}
 {% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item active">Dashboard</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('meetings.create_meeting') }}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-calendar-plus"></i> New Meeting
+            </a>
+            <a href="{{ url_for('participants.add_participant') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-person-plus"></i> New Participant
+            </a>
+        </div>
+    </div>
 </div>
 
 <div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-primary h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ participants_count }}</h5>
-                <p class="card-text">Participants</p>
-                <i class="bi bi-people position-absolute top-0 end-0 m-3 opacity-50" style="font-size: 2rem;"></i>
+    <!-- Participants Stat -->
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card stat-card" style="background: var(--grad-1);">
+            <div class="card-body p-0">
+                <div class="stat-num">{{ participants_count }}</div>
+                <div class="stat-label">Participants</div>
+                <i class="bi bi-people stat-icon"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-success h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ meetings_count }}</h5>
-                <p class="card-text">Meetings</p>
-                <i class="bi bi-calendar-event position-absolute top-0 end-0 m-3 opacity-50" style="font-size: 2rem;"></i>
+    
+    <!-- Meetings Stat -->
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card stat-card" style="background: var(--grad-2);">
+            <div class="card-body p-0">
+                <div class="stat-num">{{ meetings_count }}</div>
+                <div class="stat-label">Meetings</div>
+                <i class="bi bi-calendar-event stat-icon"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-info h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ memories_count }}</h5>
-                <p class="card-text">Memories</p>
-                <i class="bi bi-brain position-absolute top-0 end-0 m-3 opacity-50" style="font-size: 2rem;"></i>
+    
+    <!-- Memories Stat -->
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card stat-card" style="background: var(--grad-3);">
+            <div class="card-body p-0">
+                <div class="stat-num">{{ memories_count }}</div>
+                <div class="stat-label">Memories</div>
+                <i class="bi bi-brain stat-icon"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-warning h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ pending_tasks }}</h5>
-                <p class="card-text">Pending Tasks</p>
-                <i class="bi bi-check2-square position-absolute top-0 end-0 m-3 opacity-50" style="font-size: 2rem;"></i>
+    
+    <!-- Pending Tasks Stat -->
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card stat-card" style="background: var(--grad-4);">
+            <div class="card-body p-0">
+                <div class="stat-num">{{ pending_tasks }}</div>
+                <div class="stat-label">Pending Tasks</div>
+                <i class="bi bi-check2-square stat-icon"></i>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Recent Meetings</span>
+    <!-- Recent Meetings Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                <span class="fs-5 fw-bold text-primary"><i class="bi bi-calendar3 me-2"></i>Recent Meetings</span>
                 <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-sm btn-outline-primary">View All</a>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 {% if recent_meetings %}
                     <div class="list-group list-group-flush">
                         {% for meeting in recent_meetings %}
-                            <a href="{{ url_for('meetings.meeting_details', id=meeting.id) }}" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">{{ meeting.title }}</h6>
-                                    <small>{{ meeting.date.strftime('%b %d') }}</small>
+                            <a href="{{ url_for('meetings.meeting_details', id=meeting.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div class="text-truncate" style="max-width: 75%;">
+                                    <h6 class="mb-1 text-truncate font-heading">{{ meeting.title }}</h6>
+                                    <span class="text-secondary small"><i class="bi bi-clock me-1"></i>{{ meeting.date.strftime('%Y-%m-%d') }}</span>
                                 </div>
+                                <span class="badge bg-light text-primary border border-primary-subtle px-2 py-1.5"><i class="bi bi-chevron-right"></i></span>
                             </a>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted">No meetings yet. <a href="{{ url_for('meetings.create_meeting') }}">Create one</a></p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-3">No recent meetings scheduled.</p>
+                        <a href="{{ url_for('meetings.create_meeting') }}" class="btn btn-sm btn-primary">Schedule Meeting</a>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Recent Memories</span>
+    
+    <!-- Recent Memories Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                <span class="fs-5 fw-bold text-accent"><i class="bi bi-cpu me-2"></i>Recent Memories</span>
                 <a href="{{ url_for('memories.list_memories') }}" class="btn btn-sm btn-outline-primary">View All</a>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 {% if recent_memories %}
                     <div class="list-group list-group-flush">
                         {% for memory in recent_memories %}
                             <div class="list-group-item">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <small class="badge bg-secondary">{{ memory.memory_type }}</small>
-                                    <small>{{ memory.created_at.strftime('%b %d') }}</small>
+                                <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1 rounded-pill small">{{ memory.memory_type | capitalize }}</span>
+                                    <small class="text-secondary"><i class="bi bi-calendar me-1"></i>{{ memory.created_at.strftime('%b %d') }}</small>
                                 </div>
-                                <p class="mb-1 mt-1">{{ memory.content[:100] }}...</p>
+                                <p class="mb-0 text-secondary small text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;">{{ memory.content }}</p>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted">No memories yet. Memories are created when you analyze meetings.</p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-brain text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-3">No memory insights loaded yet.</p>
+                        <span class="text-muted small">Memories generate after running Gemini analysis on your meeting summaries.</span>
+                    </div>
                 {% endif %}
             </div>
         </div>

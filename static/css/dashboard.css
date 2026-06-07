@@ -1,7 +1,45 @@
 .stat-card {
-    border-radius: 10px;
-    transition: transform 0.2s;
+    border-radius: var(--radius-md) !important;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff !important;
+    padding: 1.5rem !important;
+    transition: transform var(--transition-speed) var(--transition-bounce), box-shadow var(--transition-speed) ease !important;
+    border: none !important;
 }
+
 .stat-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.2) !important;
+}
+
+.stat-icon {
+    font-size: 3rem;
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.2;
+    transition: transform var(--transition-speed) var(--transition-bounce), opacity var(--transition-speed) ease;
+    pointer-events: none;
+}
+
+.stat-card:hover .stat-icon {
+    transform: translateY(-50%) scale(1.18) rotate(-5deg);
+    opacity: 0.4;
+}
+
+.stat-num {
+    font-size: 2.25rem;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
 }
