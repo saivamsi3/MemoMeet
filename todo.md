@@ -156,25 +156,32 @@ Note: Relationship metrics are updated on meeting/action-item create/edit/delete
 Note: Chat UI is available at `/chat`. Backend uses `ai/memory_chat_engine.py` to build context from recent memories, meetings, and action items and calls `GeminiService` when configured. Remaining work: add streaming responses and richer context filtering.
 
 ## Phase 10: Analytics Dashboard
-- [ ] Create meetings per month chart
-- [ ] Create relationship score trends chart
-- [ ] Create action item completion rate chart
-- [ ] Create participant engagement chart
-- [ ] Show total participants widget
-- [ ] Show total meetings widget
-- [ ] Show total memories widget
-- [ ] Show pending commitments widget
-- [ ] Show upcoming meetings widget
-- [ ] Deliver: interactive analytics dashboard
+- [x] Create meetings per month chart
+- [x] Create relationship score trends chart
+- [x] Create action item completion rate chart
+- [x] Create participant engagement chart
+- [x] Show total participants widget
+- [x] Show total meetings widget
+- [x] Show total memories widget
+- [x] Show pending commitments widget
+- [x] Show upcoming meetings widget
+- [x] Deliver: interactive analytics dashboard
+
+## Next Actions
+- [x] Show upcoming meetings widget
+- [ ] Add JSON endpoints for live charts
+- [ ] Add unit tests for analytics aggregations
+- [x] Deliver: interactive analytics dashboard
+
 
 ## Phase 11: Advanced Features
-- [ ] Build relationship timeline
-- [ ] Add AI recommendations
-- [ ] Add memory importance scoring
-- [ ] Classify memory: High Priority
-- [ ] Classify memory: Medium Priority
-- [ ] Classify memory: Low Priority
-- [ ] Add smart alerts for missed follow-ups
+- [x] Build relationship timeline
+- [x] Add AI recommendations
+- [x] Add memory importance scoring
+- [x] Classify memory: High Priority
+- [x] Classify memory: Medium Priority
+- [x] Classify memory: Low Priority
+- [ ] Add smart alerts for missed follow-ups (in-progress)
 - [ ] Add smart alerts for overdue commitments
 - [ ] Add smart alerts for declining engagement
-- [ ] Deliver: advanced intelligence layer
+- [ ] Deliver: advanced intelligence layer (in-progress)
