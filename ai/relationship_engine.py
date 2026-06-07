@@ -1,4 +1,4 @@
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 from ai.prompt_templates import RECOMMENDATION_PROMPT
 from models.relationship import Relationship
 from models.action_item import ActionItem
@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 class RelationshipEngine:
     def __init__(self):
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def analyze(self, participant, user_id):
         rel = Relationship.query.filter_by(user_id=user_id, participant_id=participant.id).first()
