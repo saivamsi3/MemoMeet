@@ -61,6 +61,41 @@ def get_analytics_context(user_id):
 
     upcoming_meetings = Meeting.query.filter(Meeting.user_id == user_id, Meeting.date >= datetime.utcnow()).order_by(Meeting.date).limit(5).all()
 
+    # Dynamic AI Relationship Insights
+    ai_insights = []
+    for r in relationships:
+        if r.health_score < 4.0:
+            ai_insights.append({
+                'participant': r.participant,
+                'type': 'danger',
+                'icon': 'bi-exclamation-triangle-fill',
+                'message': f"Relationship with {r.participant.name} is critically low ({r.health_score:.1f}/10.0). Consider scheduling a check-in."
+            })
+        elif r.engagement_level < 0.5:
+            ai_insights.append({
+                'participant': r.participant,
+                'type': 'warning',
+                'icon': 'bi-clock-history',
+                'message': f"Engagement with {r.participant.name} is fading. Let's reach out and schedule a sync."
+            })
+        
+        pending_item_count = ActionItem.query.filter_by(participant_id=r.participant_id, user_id=user_id, status="Pending").count()
+        if pending_item_count > 0:
+            ai_insights.append({
+                'participant': r.participant,
+                'type': 'info',
+                'icon': 'bi-check2-square',
+                'message': f"{r.participant.name} has {pending_item_count} pending action items. Follow up to clear blockers."
+            })
+
+    if not ai_insights:
+        ai_insights.append({
+            'participant': None,
+            'type': 'success',
+            'icon': 'bi-hand-thumbs-up-fill',
+            'message': "All relationships are looking healthy! Keep maintaining this meeting frequency."
+        })
+
     return {
         'total_participants': total_participants,
         'total_meetings': total_meetings,
@@ -78,6 +113,7 @@ def get_analytics_context(user_id):
         'engagement_values': engagement_values,
         'relationship_dist': {'strong': strong, 'moderate': moderate, 'at_risk': at_risk},
         'upcoming_meetings': upcoming_meetings,
+        'ai_insights': ai_insights,
     }
 
 
