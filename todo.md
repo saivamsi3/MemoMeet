@@ -67,18 +67,18 @@ Checklist generated from `plan.md`.
 - [x] Deliver: meeting management module
 
 ## Phase 4: Gemini AI Integration
-- [ ] Configure Gemini API key
-- [ ] Create Gemini service layer
-- [ ] Create prompt templates
-- [ ] Send meeting summaries to Gemini
-- [ ] Extract facts
-- [ ] Extract concerns
-- [ ] Extract goals
-- [ ] Extract commitments
-- [ ] Extract preferences
-- [ ] Extract decisions
-- [ ] Save extracted insights to database
-- [ ] Deliver: AI meeting analysis
+- [x] Configure GEMINI_API_KEY env var support
+- [x] Create Gemini service layer (`ai/gemini_service.py`)
+- [x] Create prompt templates (`ai/prompt_templates.py`)
+- [x] Send meeting summaries to Gemini (via `ai/memory_engine.py`)
+- [x] Extract facts
+- [x] Extract concerns
+- [x] Extract goals
+- [x] Extract commitments
+- [x] Extract preferences
+- [x] Extract decisions
+- [x] Save extracted insights to database (via `ai/memory_engine.py` -> `models/memory.py`)
+- [x] Deliver: AI meeting analysis (analyze endpoint added)
 
 ## Phase 5: Memory Engine
 - [ ] Implement fact memory

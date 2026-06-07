@@ -5,6 +5,7 @@ from extensions import db
 from models.meeting import Meeting
 from models.participant import Participant
 from models.meeting_participant import MeetingParticipant
+from ai.memory_engine import MemoryEngine
 
 meetings_bp = Blueprint("meetings", __name__)
 
@@ -60,6 +61,19 @@ def create_meeting():
 def meeting_details(id):
     meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     return render_template("meetings/meeting_details.html", meeting=meeting)
+
+
+@meetings_bp.route("/meetings/<int:id>/analyze", methods=["POST"])
+@login_required
+def analyze_meeting(id):
+    meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    engine = MemoryEngine()
+    try:
+        saved = engine.save_memories(meeting)
+        flash(f"Extracted and saved {len(saved)} memories.", "success")
+    except Exception as e:
+        flash(f"Failed to analyze meeting: {str(e)}", "danger")
+    return redirect(url_for("meetings.meeting_details", id=id))
 
 
 @meetings_bp.route("/meetings/<int:id>/edit", methods=["GET", "POST"])
