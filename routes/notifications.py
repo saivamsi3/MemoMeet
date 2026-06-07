@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
-from main import db
+from extensions import db
 from models.notification import Notification
 from models.recommendation import Recommendation
 

@@ -1,4 +1,4 @@
-from main import db
+from extensions import db
 from models.memory import Memory
 
 

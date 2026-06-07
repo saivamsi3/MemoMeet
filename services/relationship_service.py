@@ -1,4 +1,4 @@
-from main import db
+from extensions import db
 from models.relationship import Relationship
 from models.meeting_participant import MeetingParticipant
 from models.action_item import ActionItem

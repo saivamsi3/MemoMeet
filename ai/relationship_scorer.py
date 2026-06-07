@@ -1,5 +1,5 @@
 from models.relationship import Relationship
-from main import db
+from extensions import db
 
 
 class RelationshipScorer:

@@ -1,4 +1,4 @@
-from main import db
+from extensions import db
 from models.analytics import Analytics
 from models.meeting import Meeting
 from models.participant import Participant

@@ -1,5 +1,5 @@
 from datetime import datetime
-from main import db
+from extensions import db
 from models.meeting import Meeting
 from models.meeting_participant import MeetingParticipant
 

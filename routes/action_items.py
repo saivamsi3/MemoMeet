@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from main import db
+from extensions import db
 from models.action_item import ActionItem
 
 action_items_bp = Blueprint("action_items", __name__)

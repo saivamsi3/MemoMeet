@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from main import db
+from extensions import db
 from models.participant import Participant
 
 participants_bp = Blueprint("participants", __name__)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from main import db
+from extensions import db
 from models.action_item import ActionItem
 
 
