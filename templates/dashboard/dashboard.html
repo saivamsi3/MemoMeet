@@ -238,7 +238,7 @@
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-{{ 'info' if item.status == 'In Progress' else 'warning text-dark' }}">
+                                                    <span class="badge bg-{{ 'danger' if item.status == 'Overdue' else 'info' if item.status == 'In Progress' else 'warning text-dark' }}">
                                                         {{ item.status }}
                                                     </span>
                                                 </td>
