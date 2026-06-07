@@ -1,37 +1,290 @@
 {% extends "layout/base.html" %}
-{% block title %}Recommendations{% endblock %}
+{% block title %}Meeting Preparation{% endblock %}
+
+{% block extra_css %}
+<style>
+    .prep-card {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 1.75rem;
+    }
+    .prep-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-hover-shadow);
+    }
+    .prep-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .meeting-title-link {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-family: var(--font-heading);
+    }
+    .meeting-title-link:hover { color: var(--primary); }
+
+    .urgency-pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 0.3rem 0.85rem;
+        border-radius: 50px;
+        letter-spacing: 0.03em;
+    }
+
+    /* Participant sub-card */
+    .participant-prep-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Checklist */
+    .checklist-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 0.45rem 0;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+    .checklist-item .check-icon {
+        font-size: 1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .checklist-item.done { color: var(--text-secondary); opacity: 0.65; }
+    .checklist-item.todo { color: var(--text-primary); font-weight: 500; }
+
+    /* Memory pill */
+    .memory-pill {
+        display: inline-block;
+        background: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary);
+        border-radius: var(--radius-sm);
+        padding: 0.2rem 0.6rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+        margin-right: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .section-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-secondary);
+    }
+    .empty-state i { font-size: 3.5rem; opacity: 0.25; display: block; margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
-<li class="breadcrumb-item active">Recommendations</li>
+<li class="breadcrumb-item active">Meeting Prep</li>
 {% endblock %}
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Recommendations</h1>
-</div>
 
-{% if recommendations %}
-    <div class="list-group">
-        {% for rec in recommendations %}
-            <div class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">
-                        <span class="badge bg-{{ 'danger' if rec.priority == 'high' else 'warning' if rec.priority == 'medium' else 'info' }}">
-                            {{ rec.priority }}
-                        </span>
-                        {{ rec.recommendation_type | replace('_', ' ') | title }}
-                        {% if rec.participant %}
-                            <span class="text-muted small ms-2">
-                                for <a href="{{ url_for('participants.participant_details', id=rec.participant.id) }}" class="text-decoration-none fw-semibold"><i class="bi bi-person"></i> {{ rec.participant.name }}</a>
-                            </span>
-                        {% endif %}
-                    </h6>
-                    <small>{{ rec.created_at.strftime('%b %d, %Y') }}</small>
-                </div>
-                <p class="mb-1">{{ rec.content }}</p>
-            </div>
-        {% endfor %}
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 font-heading mb-1">Meeting Preparation</h1>
+            <p class="text-muted mb-0 small">Everything you need to know before your upcoming meetings.</p>
+        </div>
+        <a href="{{ url_for('meetings.create_meeting') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Meeting
+        </a>
     </div>
-{% else %}
-    <p class="text-muted">No recommendations yet. Recommendations will appear as you use MemoMeet.</p>
-{% endif %}
+
+    {% if not meeting_cards %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body empty-state">
+                <i class="bi bi-calendar-check"></i>
+                <h5 class="fw-bold mb-2">No upcoming meetings</h5>
+                <p class="text-muted mb-4">You don't have any scheduled future meetings. Create one to start building preparation content.</p>
+                <a href="{{ url_for('meetings.create_meeting') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Schedule a Meeting
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-muted mb-4">
+            <i class="bi bi-clock me-1"></i>
+            You have <strong>{{ meeting_cards|length }}</strong> upcoming meeting{{ 's' if meeting_cards|length != 1 else '' }}.
+        </p>
+
+        {% for card in meeting_cards %}
+        <div class="prep-card">
+            <!-- Card Header -->
+            <div class="prep-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 text-white fw-bold"
+                         style="width: 48px; height: 48px; background: linear-gradient(135deg, #6366f1, #a855f7); font-size: 1.1rem; font-family: var(--font-heading); flex-shrink: 0;">
+                        {{ card.days_until if card.days_until > 0 else '!' }}
+                    </div>
+                    <div>
+                        <a href="{{ url_for('meetings.meeting_details', id=card.meeting.id) }}" class="meeting-title-link">
+                            {{ card.meeting.title }}
+                        </a>
+                        <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                            <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>{{ card.meeting.date.strftime('%A, %b %d, %Y') }}</span>
+                            <span class="text-muted small"><i class="bi bi-people me-1"></i>{{ card.participants_data|length }} participant{{ 's' if card.participants_data|length != 1 else '' }}</span>
+                            {% if card.total_overdue > 0 %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill"><i class="bi bi-exclamation-triangle me-1"></i>{{ card.total_overdue }} Overdue</span>
+                            {% endif %}
+                            {% if card.total_pending > 0 %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill"><i class="bi bi-check2-square me-1"></i>{{ card.total_pending }} Pending</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="urgency-pill bg-{{ card.urgency }}-subtle text-{{ card.urgency }} border border-{{ card.urgency }}-subtle">
+                        <i class="bi bi-alarm me-1"></i>{{ card.urgency_label }}
+                    </span>
+                    <a href="{{ url_for('meetings.meeting_details', id=card.meeting.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Left: Preparation Checklist -->
+                    <div class="col-lg-4">
+                        <div class="section-label"><i class="bi bi-check2-all me-1"></i>Preparation Checklist</div>
+                        {% for item in card.checklist %}
+                            <div class="checklist-item {{ 'done' if item.done else 'todo' }}">
+                                <span class="check-icon text-{{ 'success' if item.done else card.urgency }}">
+                                    <i class="bi bi-{{ 'check-circle-fill' if item.done else 'circle' }}"></i>
+                                </span>
+                                <span>{{ item.text }}</span>
+                            </div>
+                        {% endfor %}
+
+                        {% if card.meeting.key_decisions %}
+                        <div class="mt-3">
+                            <div class="section-label"><i class="bi bi-lightbulb me-1"></i>Key Decisions</div>
+                            <p class="small text-secondary" style="white-space: pre-line;">{{ card.meeting.key_decisions[:200] }}{% if card.meeting.key_decisions|length > 200 %}…{% endif %}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-3">
+                            <a href="{{ url_for('reports.preparation_report', meeting_id=card.meeting.id) }}" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="bi bi-file-earmark-text me-1"></i> Generate Full Prep Report
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right: Participants -->
+                    <div class="col-lg-8">
+                        <div class="section-label"><i class="bi bi-people me-1"></i>Participants &amp; Context</div>
+
+                        {% if card.participants_data %}
+                            {% for pd in card.participants_data %}
+                            {% set grad_idx = pd.participant.id % 5 %}
+                            {% if grad_idx == 0 %}{% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+                            {% elif grad_idx == 1 %}{% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+                            {% elif grad_idx == 2 %}{% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+                            {% elif grad_idx == 3 %}{% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+                            {% else %}{% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}{% endif %}
+                            {% set parts = pd.participant.name.split() %}
+                            {% set initials = parts[0][0]|upper %}{% if parts|length > 1 %}{% set initials = initials + parts[1][0]|upper %}{% endif %}
+
+                            <div class="participant-prep-card">
+                                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center justify-content-center text-white fw-bold rounded-circle"
+                                             style="width:32px;height:32px;background:{{ gradient }};font-size:0.75rem;flex-shrink:0;">
+                                            {{ initials }}
+                                        </div>
+                                        <div>
+                                            <a href="{{ url_for('participants.participant_details', id=pd.participant.id) }}"
+                                               class="fw-bold text-decoration-none text-primary small font-heading">{{ pd.participant.name }}</a>
+                                            {% if pd.participant.role %}
+                                                <span class="text-muted ms-1 small">· {{ pd.participant.role }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <span class="text-muted" style="font-size:0.75rem;">
+                                        <i class="bi bi-calendar-event me-1"></i>{{ pd.total_meetings }} meeting{{ 's' if pd.total_meetings != 1 else '' }} total
+                                    </span>
+                                </div>
+
+                                <!-- Overdue items -->
+                                {% if pd.overdue_items %}
+                                <div class="mb-2">
+                                    <span class="section-label text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Overdue</span>
+                                    {% for item in pd.overdue_items %}
+                                        <div class="d-flex align-items-start gap-2 mb-1">
+                                            <i class="bi bi-x-circle-fill text-danger mt-1" style="font-size:0.8rem;flex-shrink:0;"></i>
+                                            <span class="small text-danger fw-medium">{{ item.task }}{% if item.deadline %} <span class="text-muted fw-normal">(was {{ item.deadline.strftime('%b %d') }})</span>{% endif %}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <!-- Pending items -->
+                                {% if pd.pending_items %}
+                                <div class="mb-2">
+                                    <span class="section-label"><i class="bi bi-check2-square me-1"></i>Open Action Items</span>
+                                    {% for item in pd.pending_items %}
+                                        <div class="d-flex align-items-start gap-2 mb-1">
+                                            <i class="bi bi-circle text-warning mt-1" style="font-size:0.8rem;flex-shrink:0;"></i>
+                                            <span class="small">{{ item.task }}{% if item.deadline %} <span class="text-muted">(due {{ item.deadline.strftime('%b %d') }})</span>{% endif %}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <!-- Recent memories -->
+                                {% if pd.recent_memories %}
+                                <div>
+                                    <span class="section-label"><i class="bi bi-journal-text me-1"></i>Recent Context</span>
+                                    {% for mem in pd.recent_memories %}
+                                        <span class="memory-pill" title="{{ mem.content }}">
+                                            <i class="bi bi-bookmark-fill me-1"></i>{{ mem.memory_type | title }}: {{ mem.content[:40] }}{% if mem.content|length > 40 %}…{% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if not pd.pending_items and not pd.overdue_items and not pd.recent_memories %}
+                                    <p class="text-muted small mb-0 fst-italic">No open items or context notes for this participant.</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-person-plus" style="font-size:2rem; opacity:0.3;"></i>
+                                <p class="mt-2 mb-0 small">No participants added yet.</p>
+                                <a href="{{ url_for('meetings.edit_meeting', id=card.meeting.id) }}" class="btn btn-sm btn-outline-secondary mt-2">Add Participants</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
 {% endblock %}
