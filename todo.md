@@ -112,7 +112,6 @@ Checklist generated from `plan.md`.
 - [x] Deliver: commitment tracking
 
 ## Phase 7: Relationship Intelligence Engine
-## Phase 7: Relationship Intelligence Engine
 - [x] Calculate number of meetings
 - [x] Calculate engagement level
 - [x] Calculate meeting frequency
@@ -126,30 +125,35 @@ Checklist generated from `plan.md`.
 Note: Relationship metrics are updated on meeting/action-item create/edit/delete. Remaining work: add dedicated tests and update docs/changelog.
 
 ## Phase 8: AI Meeting Preparation Engine
-- [ ] Load participant profile before meeting
-- [ ] Load previous meetings before meeting
-- [ ] Load memories before meeting
-- [ ] Load commitments before meeting
-- [ ] Load relationship data before meeting
-- [ ] Generate relationship summary
-- [ ] Generate key memories
-- [ ] Generate open commitments
-- [ ] Generate important concerns
-- [ ] Generate suggested questions
-- [ ] Generate suggested discussion topics
-- [ ] Generate risks to address
-- [ ] Generate PDF report
-- [ ] Generate printable report
-- [ ] Deliver: one-click preparation report
+- [x] Load participant profile before meeting
+- [x] Load previous meetings before meeting
+- [x] Load memories before meeting
+- [x] Load commitments before meeting
+- [x] Load relationship data before meeting
+- [x] Generate relationship summary
+- [x] Generate key memories
+- [x] Generate open commitments
+- [x] Generate important concerns
+- [x] Generate suggested questions
+- [x] Generate suggested discussion topics
+- [x] Generate risks to address
+- [x] Generate PDF report
+- [x] Generate printable report
+- [x] Deliver: one-click preparation report
+- [x] Add preparation options form (select participants, sections to include)
+- [x] Add "Prepare" button to meeting details (launches preparation form)
+
 
 ## Phase 9: MemoMeet AI Chat
-- [ ] Create chat interface
-- [ ] Support memory retrieval questions
-- [ ] Search memories from user query
-- [ ] Load context for AI response
-- [ ] Run Gemini analysis for answers
-- [ ] Return answer in chat UI
-- [ ] Deliver: memory-powered AI assistant
+- [x] Create chat interface
+- [x] Support memory retrieval questions
+- [x] Search memories from user query
+- [x] Load context for AI response
+- [x] Run Gemini analysis for answers
+- [x] Return answer in chat UI
+- [x] Deliver: memory-powered AI assistant
+
+Note: Chat UI is available at `/chat`. Backend uses `ai/memory_chat_engine.py` to build context from recent memories, meetings, and action items and calls `GeminiService` when configured. Remaining work: add streaming responses and richer context filtering.
 
 ## Phase 10: Analytics Dashboard
 - [ ] Create meetings per month chart

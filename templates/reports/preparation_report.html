@@ -21,4 +21,17 @@
         <a href="{{ url_for('meetings.meeting_details', id=meeting.id) }}" class="btn btn-sm btn-outline-secondary">Back to Meeting</a>
     </div>
 </div>
+
+{% if participant_reports %}
+    {% for pr in participant_reports %}
+        <div class="card mb-3">
+            <div class="card-header"><strong>{{ pr.participant.name }}</strong> <small class="text-muted">Preparation</small></div>
+            <div class="card-body">
+                <pre style="white-space:pre-wrap;">{{ pr.report }}</pre>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">No participants found for this meeting.</p>
+{% endif %}
 {% endblock %}

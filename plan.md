@@ -370,6 +370,29 @@ Generate:
 
 One-click AI meeting preparation report.
 
+### Preparation Form
+
+Add an interactive form on the meeting details page to configure preparation options before generating the report. The form should support:
+
+- Select participants to include (multi-select)
+- Sections to include: Relationship Summary, Key Memories, Open Commitments, Concerns, Suggested Questions, Suggested Topics, Risks
+- Output format: Printable / PDF
+- Option to limit memories (e.g., last N memories)
+- Option to include only open commitments or all commitments
+
+UX flow:
+
+1. User opens a meeting and clicks `Prepare`.
+2. A modal or inline form appears with the options above.
+3. User submits; server calls `PreparationEngine.generate_report` for selected participants and returns rendered preparation cards or a downloadable PDF.
+
+Implementation notes:
+
+- Route: `/reports/preparation/<meeting_id>` (existing) will accept optional form parameters (query or POST) to control generation.
+- Template: `templates/reports/preparation_report.html` will render `participant_reports` (already implemented) and support a downloadable PDF link when PDF export is implemented.
+- Tests: add unit tests for `PreparationEngine.generate_report` and an integration test for the preparation route.
+
+
 ---
 
 # Phase 9: MemoMeet AI Chat
@@ -406,6 +429,20 @@ Answer
 ## Deliverables
 
 Working memory-powered AI assistant.
+ 
+Implementation notes (completed):
+
+- Chat page: `templates/chatbot/memo_chat.html` with client JS (`static/js/chatbot.js`) and CSS (`static/css/chatbot.css`).
+- Routes: `/chat` and `/chat/ask` implemented in `routes/chatbot.py`.
+- Engine: `ai/memory_chat_engine.py` builds context (recent memories, meetings, action items) and calls `GeminiService` to answer questions, with a fallback when Gemini is unavailable.
+- Service wrapper: `services/chat_service.py` provides a thin API for asking questions.
+
+Next steps / Improvements:
+
+- Add streaming / partial response support to the chat endpoint.
+- Improve retrieval by relevance (e.g., semantic search or embedding-based ranking).
+- Add user feedback loop: mark helpful/unhelpful to improve prompts or retrain rankings.
+
 
 ---
 
