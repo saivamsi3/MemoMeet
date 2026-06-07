@@ -43,7 +43,7 @@
                     <div class="mb-4">
                         <label class="form-label fw-bold d-block">Participants</label>
                         {% if participants %}
-                            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto; background-color: var(--bg-secondary); border-color: var(--border-color) !important;">
                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
                                     {% for p in participants %}
                                         {# Generate deterministic avatar gradient #}
@@ -68,7 +68,7 @@
                                         {% endif %}
 
                                         <div class="col">
-                                            <div class="form-check d-flex align-items-center gap-2 p-2 border rounded bg-white hover-shadow-sm transition-all" style="cursor: pointer;">
+                                            <div class="form-check d-flex align-items-center gap-2 p-2 border rounded hover-shadow-sm transition-all" style="cursor: pointer; background-color: var(--bg-card); border-color: var(--border-color) !important;">
                                                 <input class="form-check-input ms-0 me-2" type="checkbox" name="participants" value="{{ p.id }}" id="participant{{ p.id }}" {% if p.id in selected_participant_ids %}checked{% endif %}>
                                                 <label class="form-check-label d-flex align-items-center gap-2 w-100 style-cursor" for="participant{{ p.id }}">
                                                     <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading" style="background: {{ gradient }}; width: 28px; height: 28px; border-radius: 50%; font-size: 0.75rem; font-weight: bold;">

@@ -19,6 +19,11 @@
                             {{ rec.priority }}
                         </span>
                         {{ rec.recommendation_type | replace('_', ' ') | title }}
+                        {% if rec.participant %}
+                            <span class="text-muted small ms-2">
+                                for <a href="{{ url_for('participants.participant_details', id=rec.participant.id) }}" class="text-decoration-none fw-semibold"><i class="bi bi-person"></i> {{ rec.participant.name }}</a>
+                            </span>
+                        {% endif %}
                     </h6>
                     <small>{{ rec.created_at.strftime('%b %d, %Y') }}</small>
                 </div>

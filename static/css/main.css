@@ -234,3 +234,122 @@ main {
         position: static;
     }
 }
+
+/* Global Initials Avatars */
+.avatar-initials {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform var(--transition-speed) var(--transition-bounce);
+}
+
+.avatar-initials-sm {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.avatar-initials-xs {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    font-family: var(--font-heading);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+}
+
+/* Overlapping Avatars Group */
+.avatar-group {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.avatar-group-item {
+    margin-right: -12px;
+    border: 2px solid var(--bg-card);
+    border-radius: 50% !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) var(--transition-bounce), z-index var(--transition-speed) ease;
+    cursor: default;
+    position: relative;
+}
+
+.avatar-group-item:hover {
+    transform: translateY(-4px) scale(1.12);
+    z-index: 50 !important;
+}
+
+/* Global Table Styles */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+}
+
+.table thead th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.table tbody tr {
+    background-color: var(--bg-card);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Custom Chevron Button & Hover Card Link */
+.btn-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--primary) !important;
+    transition: all var(--transition-speed) ease;
+}
+
+.hover-card-link {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: all var(--transition-speed) ease;
+}
+
+.hover-card-link:hover {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+

@@ -26,6 +26,33 @@
     --grad-2: linear-gradient(135deg, #059669, #34d399);
     --grad-3: linear-gradient(135deg, #ea580c, #fbbf24);
     --grad-4: linear-gradient(135deg, #d927c7, #f472b6);
+
+    /* Category Colors */
+    --color-fact: #0d6efd;
+    --color-fact-soft: rgba(13, 110, 253, 0.1);
+    --color-concern: #fd7e14;
+    --color-concern-soft: rgba(253, 126, 20, 0.1);
+    --color-goal: #198754;
+    --color-goal-soft: rgba(25, 135, 84, 0.1);
+    --color-commitment: #6f42c1;
+    --color-commitment-soft: rgba(111, 66, 193, 0.1);
+    --color-preference: #d63384;
+    --color-preference-soft: rgba(214, 51, 132, 0.1);
+    --color-decision: #dc3545;
+    --color-decision-soft: rgba(220, 53, 69, 0.1);
+
+    /* Tag Colors */
+    --tag-interest-bg: rgba(79, 70, 229, 0.08);
+    --tag-interest-text: #4f46e5;
+    --tag-interest-border: rgba(79, 70, 229, 0.15);
+    
+    --tag-goal-bg: rgba(16, 185, 129, 0.08);
+    --tag-goal-text: #10b981;
+    --tag-goal-border: rgba(16, 185, 129, 0.15);
+    
+    --tag-preference-bg: rgba(245, 158, 11, 0.08);
+    --tag-preference-text: #f59e0b;
+    --tag-preference-border: rgba(245, 158, 11, 0.15);
 }
 
 [data-bs-theme="dark"] {
@@ -56,5 +83,32 @@
     --grad-2: linear-gradient(135deg, #064e3b, #059669);
     --grad-3: linear-gradient(135deg, #7c2d12, #ea580c);
     --grad-4: linear-gradient(135deg, #701a75, #d927c7);
+
+    /* Category Colors */
+    --color-fact: #3b82f6;
+    --color-fact-soft: rgba(59, 130, 246, 0.15);
+    --color-concern: #f97316;
+    --color-concern-soft: rgba(249, 115, 22, 0.15);
+    --color-goal: #10b981;
+    --color-goal-soft: rgba(16, 185, 129, 0.15);
+    --color-commitment: #8b5cf6;
+    --color-commitment-soft: rgba(139, 92, 246, 0.15);
+    --color-preference: #ec4899;
+    --color-preference-soft: rgba(236, 72, 153, 0.15);
+    --color-decision: #ef4444;
+    --color-decision-soft: rgba(239, 68, 68, 0.15);
+
+    /* Tag Colors */
+    --tag-interest-bg: rgba(99, 102, 241, 0.15);
+    --tag-interest-text: #a5b4fc;
+    --tag-interest-border: rgba(99, 102, 241, 0.25);
+    
+    --tag-goal-bg: rgba(16, 185, 129, 0.15);
+    --tag-goal-text: #6ee7b7;
+    --tag-goal-border: rgba(16, 185, 129, 0.25);
+    
+    --tag-preference-bg: rgba(245, 158, 11, 0.15);
+    --tag-preference-text: #fde047;
+    --tag-preference-border: rgba(245, 158, 11, 0.25);
 }
 

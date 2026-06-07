@@ -10,7 +10,7 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item">
                     <button id="themeToggle" class="btn btn-sm btn-outline-secondary me-3" style="border-radius: var(--radius-sm); border-color: var(--border-color);">
-                        <i class="bi bi-moon-fill" id="themeIcon" style="color: var(--text-primary);"></i>
+                        <i class="bi {% if current_user.is_authenticated and current_user.theme == 'dark' %}bi-sun-fill{% else %}bi-moon-fill{% endif %}" id="themeIcon" style="color: var(--text-primary);"></i>
                     </button>
                 </li>
                 <li class="nav-item dropdown">

@@ -2,13 +2,9 @@
 
 .memory-stat-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     border-radius: 12px;
-}
-
-[data-bs-theme="dark"] .memory-stat-card {
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .memory-stat-card:hover {
@@ -28,50 +24,43 @@
 
 /* Category Badge Colors & Icon Backgrounds */
 .bg-fact-soft {
-    background-color: rgba(13, 110, 253, 0.1) !important;
-    color: #0d6efd !important;
+    background-color: var(--color-fact-soft) !important;
+    color: var(--color-fact) !important;
 }
 .bg-concern-soft {
-    background-color: rgba(253, 126, 20, 0.1) !important;
-    color: #fd7e14 !important;
+    background-color: var(--color-concern-soft) !important;
+    color: var(--color-concern) !important;
 }
 .bg-goal-soft {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-    color: #198754 !important;
+    background-color: var(--color-goal-soft) !important;
+    color: var(--color-goal) !important;
 }
 .bg-commitment-soft {
-    background-color: rgba(111, 66, 193, 0.1) !important;
-    color: #6f42c1 !important;
+    background-color: var(--color-commitment-soft) !important;
+    color: var(--color-commitment) !important;
 }
 .bg-preference-soft {
-    background-color: rgba(214, 51, 132, 0.1) !important;
-    color: #d63384 !important;
+    background-color: var(--color-preference-soft) !important;
+    color: var(--color-preference) !important;
 }
 .bg-decision-soft {
-    background-color: rgba(220, 53, 69, 0.1) !important;
-    color: #dc3545 !important;
+    background-color: var(--color-decision-soft) !important;
+    color: var(--color-decision) !important;
 }
 
 .memory-card {
     transition: all 0.25s ease;
     border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     position: relative;
     overflow: hidden;
 }
 
-[data-bs-theme="dark"] .memory-card {
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
 .memory-card:hover {
     transform: translateX(4px);
-    border-color: rgba(0, 0, 0, 0.12);
-}
-
-[data-bs-theme="dark"] .memory-card:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .memory-card::before {
@@ -83,12 +72,12 @@
     width: 4px;
 }
 
-.memory-card.card-fact::before { background-color: #0d6efd; }
-.memory-card.card-concern::before { background-color: #fd7e14; }
-.memory-card.card-goal::before { background-color: #198754; }
-.memory-card.card-commitment::before { background-color: #6f42c1; }
-.memory-card.card-preference::before { background-color: #d63384; }
-.memory-card.card-decision::before { background-color: #dc3545; }
+.memory-card.card-fact::before { background-color: var(--color-fact); }
+.memory-card.card-concern::before { background-color: var(--color-concern); }
+.memory-card.card-goal::before { background-color: var(--color-goal); }
+.memory-card.card-commitment::before { background-color: var(--color-commitment); }
+.memory-card.card-preference::before { background-color: var(--color-preference); }
+.memory-card.card-decision::before { background-color: var(--color-decision); }
 
 .memory-importance-indicator {
     display: inline-flex;
@@ -101,13 +90,8 @@
 }
 
 .filter-sidebar {
-    background: var(--sidebar-bg, rgba(0, 0, 0, 0.02));
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-[data-bs-theme="dark"] .filter-sidebar {
-    background: var(--sidebar-bg, rgba(255, 255, 255, 0.02));
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
 }

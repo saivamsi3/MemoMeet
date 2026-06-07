@@ -7,26 +7,6 @@
     border-left: 4px solid var(--primary) !important;
 }
 
-/* Overlapping Avatars for Meetings List */
-.avatar-group {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-}
-
-.avatar-group-item {
-    margin-right: -12px;
-    border: 2px solid var(--bg-card);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) var(--transition-bounce), z-index var(--transition-speed) ease;
-    cursor: default;
-    position: relative;
-}
-
-.avatar-group-item:hover {
-    transform: translateY(-4px) scale(1.12);
-    z-index: 50 !important;
-}
 
 /* Styled text formatting for meeting details */
 .meeting-well {
