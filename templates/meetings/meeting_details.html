@@ -23,14 +23,77 @@
         <a href="{{ url_for('meetings.edit_meeting', id=meeting.id) }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
             <i class="bi bi-pencil"></i> Edit Meeting
         </a>
-        <a href="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}" class="btn btn-outline-info d-inline-flex align-items-center gap-2">
-            <i class="bi bi-file-earmark-text"></i> Prep Report
-        </a>
+                <a href="#" class="btn btn-outline-info d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#prepModal">
+                        <i class="bi bi-file-earmark-text"></i> Prep Report
+                </a>
         <form method="post" action="{{ url_for('meetings.analyze_meeting', id=meeting.id) }}" style="display:inline">
             <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
                 <i class="bi bi-robot"></i> Analyze
             </button>
         </form>
+    </div>
+</div>
+
+<!-- Preparation Modal -->
+<div class="modal fade" id="prepModal" tabindex="-1" aria-labelledby="prepModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}">
+            <div class="modal-header">
+                <h5 class="modal-title" id="prepModalLabel">Prepare Meeting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Participants</label>
+                    <select name="participants" class="form-select" multiple>
+                        {% for mp in meeting.participants %}
+                            {% if mp.participant %}
+                                <option value="{{ mp.participant.id }}" selected>{{ mp.participant.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Select participants to include in the preparation report.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Sections</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sections" value="relationship" id="secRel" checked>
+                        <label class="form-check-label" for="secRel">Relationship Summary</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sections" value="memories" id="secMem" checked>
+                        <label class="form-check-label" for="secMem">Key Memories</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sections" value="commitments" id="secCom" checked>
+                        <label class="form-check-label" for="secCom">Open Commitments</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sections" value="questions" id="secQ" checked>
+                        <label class="form-check-label" for="secQ">Suggested Questions</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Limit recent memories</label>
+                        <input type="number" name="limit" class="form-control" value="10" min="1">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Output Format</label>
+                        <select name="output_format" class="form-select">
+                            <option value="print">Printable</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Generate</button>
+            </div>
+            </form>
+        </div>
     </div>
 </div>
 
