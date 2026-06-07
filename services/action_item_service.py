@@ -36,11 +36,12 @@ class ActionItemService:
     @staticmethod
     def check_overdue_tasks(user_id):
         # Update overdue tasks: status in Pending or In Progress with past deadline
-        now = datetime.now(timezone.utc)
+        # Deadlines are only considered overdue after the deadline day has fully passed.
+        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
         overdue_items = ActionItem.query.filter(
             ActionItem.user_id == user_id,
             ActionItem.status.in_(["Pending", "In Progress"]),
-            ActionItem.deadline < now
+            ActionItem.deadline < today_start
         ).all()
         for item in overdue_items:
             item.status = "Overdue"

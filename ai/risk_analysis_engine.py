@@ -19,10 +19,11 @@ class RiskAnalysisEngine:
                     "message": f"Relationship health score is critically low ({rel.health_score:.1f})",
                 })
 
+        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
         overdue = ActionItem.query.filter(
             ActionItem.user_id == self.user_id,
             ActionItem.status.in_(["Pending", "In Progress"]),
-            ActionItem.deadline < datetime.now(timezone.utc),
+            ActionItem.deadline < today_start,
         ).count()
         if overdue > 0:
             risks.append({
