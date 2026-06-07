@@ -16,5 +16,7 @@ class Relationship(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    participant = db.relationship("Participant", backref="relationships", lazy=True)
+
     def __repr__(self):
         return f"<Relationship participant={self.participant_id} score={self.health_score}>"

@@ -10,6 +10,8 @@ notifications_bp = Blueprint("notifications", __name__)
 @notifications_bp.route("/notifications")
 @login_required
 def list_notifications():
+    from services.notification_service import NotificationService
+    NotificationService.generate_smart_alerts(current_user.id)
     notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).all()
     return render_template("notifications/notifications.html", notifications=notifications)
 

@@ -114,4 +114,12 @@ def engagement_data():
 @login_required
 def relationships_data():
     ctx = get_analytics_context(current_user.id)
-    return jsonify(distribution=ctx['relationship_dist'])
+    individual_scores = [{'name': r.participant.name, 'score': r.health_score} for r in ctx['relationships']]
+    return jsonify(distribution=ctx['relationship_dist'], individual_scores=individual_scores)
+
+
+@analytics_bp.route("/analytics/data/tasks")
+@login_required
+def tasks_data():
+    ctx = get_analytics_context(current_user.id)
+    return jsonify(pending=ctx['pending'], in_progress=ctx['in_progress'], completed=ctx['completed'])
