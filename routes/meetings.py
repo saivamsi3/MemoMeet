@@ -68,9 +68,45 @@ def meeting_details(id):
 def analyze_meeting(id):
     meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     engine = MemoryEngine()
+    from ai.action_item_extractor import ActionItemExtractor
+    from services.action_item_service import ActionItemService
+    extractor = ActionItemExtractor()
     try:
-        saved = engine.save_memories(meeting)
-        flash(f"Extracted and saved {len(saved)} memories.", "success")
+        saved_memories = engine.save_memories(meeting)
+        
+        text_to_extract = f"Discussion Summary:\n{meeting.discussion_summary or ''}\n\nAction Items:\n{meeting.action_items or ''}"
+        extracted_actions = extractor.extract(text_to_extract)
+        
+        participants_map = {}
+        for mp in meeting.participants:
+            if mp.participant:
+                participants_map[mp.participant.name.strip().lower()] = mp.participant.id
+                
+        saved_actions = []
+        for item in extracted_actions:
+            owner = item.get("owner")
+            participant_id = None
+            if owner:
+                owner_lower = owner.strip().lower()
+                if owner_lower in participants_map:
+                    participant_id = participants_map[owner_lower]
+                else:
+                    for p_name, p_id in participants_map.items():
+                        if p_name in owner_lower or owner_lower in p_name:
+                            participant_id = p_id
+                            break
+            
+            ActionItemService.create(
+                meeting_id=meeting.id,
+                user_id=current_user.id,
+                task=item["task"],
+                owner=owner,
+                deadline=item.get("deadline"),
+                participant_id=participant_id
+            )
+            saved_actions.append(item)
+            
+        flash(f"Extracted and saved {len(saved_memories)} memories and {len(saved_actions)} action items.", "success")
     except Exception as e:
         flash(f"Failed to analyze meeting: {str(e)}", "danger")
     return redirect(url_for("meetings.meeting_details", id=id))

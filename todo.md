@@ -98,18 +98,18 @@ Checklist generated from `plan.md`.
 - [x] Deliver: long-term memory system
 
 ## Phase 6: Action Item Tracking
-- [ ] Store task
-- [ ] Store owner
-- [ ] Store deadline
-- [ ] Store status
-- [ ] Support status: Pending
-- [ ] Support status: In Progress
-- [ ] Support status: Completed
-- [ ] Support status: Overdue
-- [ ] Show pending tasks on dashboard
-- [ ] Show upcoming deadlines on dashboard
-- [ ] Show completed tasks on dashboard
-- [ ] Deliver: commitment tracking
+- [x] Store task
+- [x] Store owner
+- [x] Store deadline
+- [x] Store status
+- [x] Support status: Pending
+- [x] Support status: In Progress
+- [x] Support status: Completed
+- [x] Support status: Overdue
+- [x] Show pending tasks on dashboard
+- [x] Show upcoming deadlines on dashboard
+- [x] Show completed tasks on dashboard
+- [x] Deliver: commitment tracking
 
 ## Phase 7: Relationship Intelligence Engine
 - [ ] Calculate number of meetings
