@@ -1,12 +1,10 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, url_for
 from flask_login import login_required, current_user
 from models.meeting import Meeting
 from models.participant import Participant
 from models.memory import Memory
 from models.action_item import ActionItem
-from models.relationship import Relationship
 from datetime import datetime, timedelta
-from sqlalchemy import func
 
 analytics_bp = Blueprint("analytics", __name__)
 
@@ -18,7 +16,6 @@ def get_analytics_context(user_id):
     pending = ActionItem.query.filter_by(user_id=user_id, status="Pending").count()
     in_progress = ActionItem.query.filter_by(user_id=user_id, status="In Progress").count()
     completed = ActionItem.query.filter_by(user_id=user_id, status="Completed").count()
-    relationships = Relationship.query.filter_by(user_id=user_id).all()
 
     today = datetime.utcnow().date()
     labels = []
@@ -52,50 +49,6 @@ def get_analytics_context(user_id):
         comp_labels.append(start.strftime("%b %Y"))
         comp_rates.append(round(rate, 1))
 
-    engagement_labels = [r.participant.name for r in relationships]
-    engagement_values = [round(r.engagement_level * 100, 1) for r in relationships]
-
-    strong = sum(1 for r in relationships if r.health_score and r.health_score > 7)
-    at_risk = sum(1 for r in relationships if r.health_score and r.health_score < 4)
-    moderate = len(relationships) - strong - at_risk
-
-    upcoming_meetings = Meeting.query.filter(Meeting.user_id == user_id, Meeting.date >= datetime.utcnow()).order_by(Meeting.date).limit(5).all()
-
-    # Dynamic AI Relationship Insights
-    ai_insights = []
-    for r in relationships:
-        if r.health_score < 4.0:
-            ai_insights.append({
-                'participant': r.participant,
-                'type': 'danger',
-                'icon': 'bi-exclamation-triangle-fill',
-                'message': f"Relationship with {r.participant.name} is critically low ({r.health_score:.1f}/10.0). Consider scheduling a check-in."
-            })
-        elif r.engagement_level < 0.5:
-            ai_insights.append({
-                'participant': r.participant,
-                'type': 'warning',
-                'icon': 'bi-clock-history',
-                'message': f"Engagement with {r.participant.name} is fading. Let's reach out and schedule a sync."
-            })
-        
-        pending_item_count = ActionItem.query.filter_by(participant_id=r.participant_id, user_id=user_id, status="Pending").count()
-        if pending_item_count > 0:
-            ai_insights.append({
-                'participant': r.participant,
-                'type': 'info',
-                'icon': 'bi-check2-square',
-                'message': f"{r.participant.name} has {pending_item_count} pending action items. Follow up to clear blockers."
-            })
-
-    if not ai_insights:
-        ai_insights.append({
-            'participant': None,
-            'type': 'success',
-            'icon': 'bi-hand-thumbs-up-fill',
-            'message': "All relationships are looking healthy! Keep maintaining this meeting frequency."
-        })
-
     return {
         'total_participants': total_participants,
         'total_meetings': total_meetings,
@@ -103,17 +56,11 @@ def get_analytics_context(user_id):
         'pending': pending,
         'in_progress': in_progress,
         'completed': completed,
-        'relationships': relationships,
         'meetings_labels': labels,
         'meetings_counts': counts,
         'completion_rate': completion_rate,
         'comp_labels': comp_labels,
         'comp_rates': comp_rates,
-        'engagement_labels': engagement_labels,
-        'engagement_values': engagement_values,
-        'relationship_dist': {'strong': strong, 'moderate': moderate, 'at_risk': at_risk},
-        'upcoming_meetings': upcoming_meetings,
-        'ai_insights': ai_insights,
     }
 
 
@@ -139,23 +86,33 @@ def completion_data():
     return jsonify(labels=ctx['comp_labels'], rates=ctx['comp_rates'], overall=ctx['completion_rate'])
 
 
-@analytics_bp.route("/analytics/data/engagement")
-@login_required
-def engagement_data():
-    ctx = get_analytics_context(current_user.id)
-    return jsonify(labels=ctx['engagement_labels'], values=ctx['engagement_values'])
-
-
-@analytics_bp.route("/analytics/data/relationships")
-@login_required
-def relationships_data():
-    ctx = get_analytics_context(current_user.id)
-    individual_scores = [{'name': r.participant.name, 'score': r.health_score} for r in ctx['relationships']]
-    return jsonify(distribution=ctx['relationship_dist'], individual_scores=individual_scores)
-
-
 @analytics_bp.route("/analytics/data/tasks")
 @login_required
 def tasks_data():
     ctx = get_analytics_context(current_user.id)
     return jsonify(pending=ctx['pending'], in_progress=ctx['in_progress'], completed=ctx['completed'])
+
+
+@analytics_bp.route("/analytics/data/calendar")
+@login_required
+def calendar_data():
+    """Return all meetings as FullCalendar-compatible event objects."""
+    meetings = Meeting.query.filter_by(user_id=current_user.id).all()
+    now = datetime.utcnow()
+    events = []
+    for m in meetings:
+        if not m.date:
+            continue
+        meet_dt = m.date.replace(tzinfo=None) if m.date.tzinfo else m.date
+        is_past = meet_dt < now
+        events.append({
+            "id": m.id,
+            "title": m.title,
+            "start": m.date.strftime("%Y-%m-%d"),
+            "url": url_for("meetings.meeting_details", id=m.id),
+            "classNames": ["fc-event-past" if is_past else "fc-event-future"],
+            "extendedProps": {
+                "isPast": is_past,
+            }
+        })
+    return jsonify(events)

@@ -2,6 +2,8 @@
 {% block title %}Analytics{% endblock %}
 
 {% block extra_css %}
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
 <style>
     .kpi-card {
         border-radius: var(--radius-md);
@@ -19,28 +21,84 @@
     }
     .kpi-icon {
         font-size: 2.25rem;
-        opacity: 0.15;
+        opacity: 0.12;
         position: absolute;
         right: 1.25rem;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-primary);
     }
-    .insight-item {
-        border-left: 4px solid var(--border-color);
-        background-color: var(--bg-secondary);
-        border-radius: var(--radius-sm);
-        padding: 1rem 1.25rem;
-        margin-bottom: 1rem;
-        transition: all 0.2s ease;
+
+    /* FullCalendar theme integration */
+    #meetingCalendar {
+        --fc-border-color: var(--border-color);
+        --fc-button-bg-color: var(--primary, #6366f1);
+        --fc-button-border-color: var(--primary, #6366f1);
+        --fc-button-hover-bg-color: #4f46e5;
+        --fc-button-hover-border-color: #4f46e5;
+        --fc-button-active-bg-color: #4338ca;
+        --fc-button-active-border-color: #4338ca;
+        --fc-button-text-color: #fff;
+        --fc-today-bg-color: rgba(99, 102, 241, 0.12);
+        --fc-page-bg-color: var(--bg-card);
+        --fc-neutral-bg-color: var(--bg-secondary);
+        --fc-list-event-hover-bg-color: var(--bg-secondary);
     }
-    .insight-item:hover {
-        transform: translateX(4px);
+    .fc .fc-toolbar-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: var(--font-heading);
     }
-    .insight-item.danger { border-left-color: var(--color-decision, #dc3545); }
-    .insight-item.warning { border-left-color: var(--color-concern, #fd7e14); }
-    .insight-item.info { border-left-color: var(--primary, #6366f1); }
-    .insight-item.success { border-left-color: var(--color-goal, #198754); }
+    .fc .fc-col-header-cell-cushion,
+    .fc .fc-daygrid-day-number,
+    .fc .fc-list-day-text,
+    .fc .fc-list-day-side-text {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+    .fc .fc-daygrid-day-number:hover {
+        color: var(--primary);
+    }
+    .fc-event-past {
+        background-color: rgba(100, 116, 139, 0.7) !important;
+        border-color: rgba(100, 116, 139, 0.85) !important;
+        color: #fff !important;
+    }
+    .fc-event-future {
+        background-color: rgba(99, 102, 241, 0.9) !important;
+        border-color: #6366f1 !important;
+        color: #fff !important;
+    }
+    .fc .fc-event {
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 2px 5px;
+    }
+    .fc .fc-button {
+        border-radius: var(--radius-sm) !important;
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        padding: 0.3rem 0.75rem !important;
+    }
+    .fc .fc-daygrid-event-dot {
+        border-color: #6366f1;
+    }
+    .calendar-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+    }
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        display: inline-block;
+    }
 </style>
 {% endblock %}
 
@@ -73,18 +131,12 @@
                 <i class="bi bi-calendar-event kpi-icon"></i>
             </div>
         </div>
-        <!-- Average Health Score -->
+        <!-- Memories -->
         <div class="col-6 col-lg-3">
             <div class="kpi-card h-100">
-                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Avg Relationship Health</h6>
-                {% set sum_scores = namespace(value=0) %}
-                {% set count_rels = relationships|length %}
-                {% for r in relationships %}
-                    {% set sum_scores.value = sum_scores.value + r.health_score %}
-                {% endfor %}
-                {% set avg_score = (sum_scores.value / count_rels) if count_rels > 0 else 0.0 %}
-                <h2 class="mb-0 fw-bold font-heading text-primary">{{ "%.1f"|format(avg_score) }}/10.0</h2>
-                <i class="bi bi-heart-fill kpi-icon"></i>
+                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Captured Memories</h6>
+                <h2 class="mb-0 fw-bold font-heading">{{ total_memories }}</h2>
+                <i class="bi bi-journal-richtext kpi-icon"></i>
             </div>
         </div>
         <!-- Pending Tasks -->
@@ -97,194 +149,70 @@
         </div>
     </div>
 
-    <!-- 2. AI-Powered Dynamic Relationship Insights -->
+    <!-- 2. Full Meeting Calendar -->
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-transparent border-bottom py-3">
-            <h5 class="mb-0 fw-bold text-primary font-heading"><i class="bi bi-robot me-2"></i>AI Actionable Relationship Insights</h5>
-        </div>
-        <div class="card-body p-4">
-            <div class="row">
-                <div class="col-12">
-                    {% for insight in ai_insights %}
-                        <div class="insight-item {{ insight.type }} d-flex justify-content-between align-items-center flex-wrap gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="fs-4 text-{{ insight.type }}"><i class="bi {{ insight.icon }}"></i></span>
-                                <span class="text-secondary small fw-medium">{{ insight.message }}</span>
-                            </div>
-                            {% if insight.participant %}
-                                <div class="d-flex gap-2">
-                                    <a href="{{ url_for('participants.participant_details', id=insight.participant.id) }}" class="btn btn-sm btn-primary">Check Profile</a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
+        <div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="mb-0 fw-bold text-primary font-heading">
+                <i class="bi bi-calendar3 me-2"></i>Meeting Calendar
+            </h5>
+            <div class="calendar-legend d-flex gap-3">
+                <span><span class="legend-dot" style="background:rgba(100,116,139,0.7)"></span>Past Meeting</span>
+                <span><span class="legend-dot" style="background:rgba(99,102,241,0.9)"></span>Upcoming Meeting</span>
             </div>
+        </div>
+        <div class="card-body p-3 p-md-4">
+            <div id="meetingCalendar"></div>
         </div>
     </div>
 
-    <!-- 3. Relationship Health Matrix -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-primary font-heading"><i class="bi bi-grid-3x3-gap me-2"></i>Relationship Metrics Matrix</h5>
-            <span class="badge bg-secondary-subtle text-primary border rounded-pill">{{ count_rels }} Active Profiles</span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Contact</th>
-                            <th>Health Score</th>
-                            <th>Engagement Level</th>
-                            <th>Meeting count</th>
-                            <th>Action completion</th>
-                            <th class="pe-4 text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in relationships %}
-                            {# Generate deterministic gradient based on ID #}
-                            {% set grad_idx = r.participant.id % 5 %}
-                            {% if grad_idx == 0 %}
-                                {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
-                            {% elif grad_idx == 1 %}
-                                {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
-                            {% elif grad_idx == 2 %}
-                                {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
-                            {% elif grad_idx == 3 %}
-                                {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
-                            {% else %}
-                                {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
-                            {% endif %}
-                            
-                            {# Extract initials #}
-                            {% set parts = r.participant.name.split() %}
-                            {% set initials = parts[0][0] | upper %}
-                            {% if parts | length > 1 %}
-                                {% set initials = initials + parts[1][0] | upper %}
-                            {% endif %}
-                            
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading fw-bold" style="background: {{ gradient }}; width: 34px; height: 34px; border-radius: 50%; font-size: 0.8rem;">
-                                            {{ initials }}
-                                        </div>
-                                        <div>
-                                            <a href="{{ url_for('participants.participant_details', id=r.participant.id) }}" class="fw-bold text-decoration-none text-primary font-heading">{{ r.participant.name }}</a>
-                                            {% if r.participant.role %}
-                                                <small class="text-muted d-block">{{ r.participant.role }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-3" style="max-width: 180px;">
-                                        <div class="progress flex-grow-1" style="height: 6px;">
-                                            <div class="progress-bar bg-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }}" role="progressbar" style="width: {{ r.health_score * 10 }}%"></div>
-                                        </div>
-                                        <span class="badge bg-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }}-subtle text-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }} border rounded-pill">{{ "%.1f"|format(r.health_score) }}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="d-inline-block rounded-circle bg-{{ 'danger' if r.engagement_level < 0.4 else 'warning' if r.engagement_level < 0.7 else 'success' }}" style="width: 8px; height: 8px;"></span>
-                                        <span class="small text-secondary">{{ (r.engagement_level * 100)|round|int }}% Engagement</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="small text-secondary fw-semibold">{{ r.meeting_count }} meetings</span>
-                                </td>
-                                <td>
-                                    <span class="small text-secondary">{{ (r.task_completion_rate * 100)|round|int }}% completion</span>
-                                </td>
-                                <td class="pe-4 text-end">
-                                    <a href="{{ url_for('participants.participant_details', id=r.participant.id) }}" class="btn btn-sm btn-outline-primary py-1 px-2.5 small" title="View Details">
-                                        <i class="bi bi-eye"></i> View
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        {% if not relationships %}
-                            <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
-                                    No active relationship metrics profiles found. Let's record meetings to sync data.
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. Interactive Live Charts Section -->
+    <!-- 3. Chart Row -->
     <div class="row">
         <!-- Task Status Chart -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Task Status Distribution</div>
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <h6 class="mb-0 fw-bold font-heading"><i class="bi bi-pie-chart me-2 text-primary"></i>Task Status Distribution</h6>
+                </div>
                 <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
                     <canvas id="taskChart" style="max-height: 280px; max-width: 280px;"></canvas>
                 </div>
             </div>
         </div>
-        
-        <!-- Relationship Scores Chart -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Contact Health Scores</div>
-                <div class="card-body">
-                    {% if relationships %}
-                        <canvas id="relationshipChart" class="w-100" style="max-height: 280px;"></canvas>
-                    {% else %}
-                        <p class="text-muted text-center py-5">No relationship data yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <!-- Meetings History Chart -->
+        <!-- Monthly Meetings Chart -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Monthly Meetings Frequency</div>
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <h6 class="mb-0 fw-bold font-heading"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Monthly Meetings Frequency</h6>
+                </div>
                 <div class="card-body">
                     <canvas id="meetingsChart" class="w-100" style="max-height: 280px;"></canvas>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="row">
         <!-- Task Completion Rate Chart -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Action Items Completion Over Time</div>
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <h6 class="mb-0 fw-bold font-heading"><i class="bi bi-graph-up me-2 text-primary"></i>Action Items Completion Over Time</h6>
+                </div>
                 <div class="card-body">
                     <canvas id="completionChart" class="w-100" style="max-height: 280px;"></canvas>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <!-- Engagement Distribution Chart -->
+        <!-- Upcoming vs Past meetings summary -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Contact Engagement Level %</div>
-                <div class="card-body">
-                    <canvas id="engagementChart" class="w-100" style="max-height: 280px;"></canvas>
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <h6 class="mb-0 fw-bold font-heading"><i class="bi bi-clock-history me-2 text-primary"></i>Meeting Timeline Split</h6>
                 </div>
-            </div>
-        </div>
-
-        <!-- Relationship Category Distribution Chart -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-transparent border-bottom">Relationship Health Distribution</div>
-                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
-                    <canvas id="relationshipDistChart" style="max-height: 280px; max-width: 280px;"></canvas>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
+                    <canvas id="timelineSplitChart" style="max-height: 260px; max-width: 260px;"></canvas>
                 </div>
             </div>
         </div>
@@ -293,5 +221,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
 {% endblock %}

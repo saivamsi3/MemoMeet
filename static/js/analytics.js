@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Configure dynamic Chart.js defaults based on active theme
     const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
     const textColor = isDark ? '#cbd5e1' : '#475569';
-    const gridColor = isDark ? '#1f2937' : '#e2e8f0';
+    const gridColor = isDark ? 'rgba(255,255,255,0.07)' : '#e2e8f0';
+    const cardBg = isDark ? '#1e2535' : '#ffffff';
 
     Chart.defaults.color = textColor;
     if (Chart.defaults.scale && Chart.defaults.scale.grid) {
@@ -15,7 +16,58 @@ document.addEventListener('DOMContentLoaded', function() {
         Chart.defaults.plugins.legend.labels.color = textColor;
     }
 
-    // 1. Task Chart
+    // ─── 1. FullCalendar ───────────────────────────────────────────────────────
+    const calendarEl = document.getElementById('meetingCalendar');
+    if (calendarEl) {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listMonth'
+            },
+            height: 'auto',
+            eventSources: [{
+                url: '/analytics/data/calendar',
+                failure: function () {
+                    console.warn('Failed to load calendar events.');
+                }
+            }],
+            eventDidMount: function (info) {
+                // Tooltip with meeting title
+                info.el.setAttribute('title', info.event.title);
+                info.el.setAttribute('data-bs-toggle', 'tooltip');
+                // Bootstrap tooltip init
+                if (window.bootstrap && bootstrap.Tooltip) {
+                    new bootstrap.Tooltip(info.el, { placement: 'top', trigger: 'hover' });
+                }
+            },
+            eventClick: function (info) {
+                info.jsEvent.preventDefault();
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                }
+            },
+            // Render past events subtler
+            eventContent: function (arg) {
+                const isPast = arg.event.extendedProps.isPast;
+                return {
+                    html: `<div class="fc-event-main-frame" style="opacity:${isPast ? 0.75 : 1}">
+                               <div class="fc-event-title-container">
+                                   <div class="fc-event-title fc-sticky">${arg.event.title}</div>
+                               </div>
+                           </div>`
+                };
+            },
+            // Theme-aware colours
+            dayCellDidMount: function (info) {
+                info.el.style.backgroundColor = '';
+            },
+        });
+        calendar.render();
+    }
+
+    // ─── 2. Task Status Doughnut Chart ────────────────────────────────────────
     const taskCanvas = document.getElementById('taskChart');
     if (taskCanvas) {
         fetch('/analytics/data/tasks')
@@ -27,70 +79,51 @@ document.addEventListener('DOMContentLoaded', function() {
                         labels: ['Pending', 'In Progress', 'Completed'],
                         datasets: [{
                             data: [data.pending, data.in_progress, data.completed],
-                            backgroundColor: ['#ffc107', '#0dcaf0', '#198754']
+                            backgroundColor: ['#f59e0b', '#0ea5e9', '#10b981'],
+                            borderWidth: 0,
+                            hoverOffset: 8
                         }]
+                    },
+                    options: {
+                        cutout: '65%',
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
                     }
                 });
             });
     }
 
-    // 2. Relationship Charts (Score and Distribution)
-    const relCanvas = document.getElementById('relationshipChart');
-    const distCanvas = document.getElementById('relationshipDistChart');
-    if (relCanvas || distCanvas) {
-        fetch('/analytics/data/relationships')
-            .then(res => res.json())
-            .then(data => {
-                if (relCanvas && data.individual_scores && data.individual_scores.length > 0) {
-                    new Chart(relCanvas, {
-                        type: 'bar',
-                        data: {
-                            labels: data.individual_scores.map(r => r.name.substring(0, 15)),
-                            datasets: [{
-                                label: 'Health Score',
-                                data: data.individual_scores.map(r => r.score),
-                                backgroundColor: '#0d6efd'
-                            }]
-                        }
-                    });
-                }
-                if (distCanvas && data.distribution) {
-                    new Chart(distCanvas, {
-                        type: 'pie',
-                        data: {
-                            labels: ['Strong', 'Moderate', 'At Risk'],
-                            datasets: [{
-                                data: [data.distribution.strong, data.distribution.moderate, data.distribution.at_risk],
-                                backgroundColor: ['#198754', '#0d6efd', '#dc3545']
-                            }]
-                        }
-                    });
-                }
-            });
-    }
-
-    // 3. Meetings Chart
+    // ─── 3. Meetings History Line Chart ───────────────────────────────────────
     const meetingsCanvas = document.getElementById('meetingsChart');
     if (meetingsCanvas) {
         fetch('/analytics/data/meetings')
             .then(res => res.json())
             .then(data => {
                 new Chart(meetingsCanvas, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: data.labels,
                         datasets: [{
                             label: 'Meetings',
                             data: data.counts,
-                            borderColor: '#20c997',
-                            backgroundColor: 'rgba(32,201,151,0.1)'
+                            backgroundColor: 'rgba(99,102,241,0.7)',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            borderRadius: 6
                         }]
+                    },
+                    options: {
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                        },
+                        plugins: { legend: { display: false } }
                     }
                 });
             });
     }
 
-    // 4. Completion Chart
+    // ─── 4. Completion Rate Line Chart ────────────────────────────────────────
     const completionCanvas = document.getElementById('completionChart');
     if (completionCanvas) {
         fetch('/analytics/data/completion')
@@ -103,44 +136,47 @@ document.addEventListener('DOMContentLoaded', function() {
                         datasets: [{
                             label: 'Completion Rate %',
                             data: data.rates,
-                            borderColor: '#ffc107',
-                            backgroundColor: 'rgba(255,193,7,0.08)'
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16,185,129,0.10)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#10b981'
                         }]
                     },
                     options: {
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100
-                            }
-                        }
+                            y: { beginAtZero: true, max: 100 }
+                        },
+                        plugins: { legend: { display: false } }
                     }
                 });
             });
     }
 
-    // 5. Engagement Chart
-    const engagementCanvas = document.getElementById('engagementChart');
-    if (engagementCanvas) {
-        fetch('/analytics/data/engagement')
+    // ─── 5. Meeting Timeline Split (Past vs Future) Doughnut ─────────────────
+    const splitCanvas = document.getElementById('timelineSplitChart');
+    if (splitCanvas) {
+        fetch('/analytics/data/calendar')
             .then(res => res.json())
-            .then(data => {
-                new Chart(engagementCanvas, {
-                    type: 'bar',
+            .then(events => {
+                const past = events.filter(e => e.extendedProps && e.extendedProps.isPast).length;
+                const future = events.length - past;
+                new Chart(splitCanvas, {
+                    type: 'doughnut',
                     data: {
-                        labels: data.labels.map(l => l.substring(0, 15)),
+                        labels: ['Past Meetings', 'Upcoming Meetings'],
                         datasets: [{
-                            label: 'Engagement %',
-                            data: data.values,
-                            backgroundColor: '#0dcaf0'
+                            data: [past, future],
+                            backgroundColor: ['rgba(100,116,139,0.7)', 'rgba(99,102,241,0.85)'],
+                            borderWidth: 0,
+                            hoverOffset: 8
                         }]
                     },
                     options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100
-                            }
+                        cutout: '65%',
+                        plugins: {
+                            legend: { position: 'bottom' }
                         }
                     }
                 });

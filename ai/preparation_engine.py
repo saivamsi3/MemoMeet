@@ -2,8 +2,7 @@ from ai.groq_service import GroqService
 from ai.prompt_templates import PREPARATION_PROMPT
 from models.memory import Memory
 from models.action_item import ActionItem
-from models.relationship import Relationship
-from services.relationship_service import RelationshipService
+from models.meeting_participant import MeetingParticipant
 
 
 class PreparationEngine:
@@ -11,7 +10,7 @@ class PreparationEngine:
         self.gemini = GroqService()
 
     def generate_report(self, participant, user_id):
-        rel = Relationship.query.filter_by(user_id=user_id, participant_id=participant.id).first()
+        meeting_count = MeetingParticipant.query.filter_by(participant_id=participant.id).count()
         memories = Memory.query.filter_by(participant_id=participant.id, user_id=user_id).order_by(Memory.created_at.desc()).limit(10).all()
         commitments = ActionItem.query.filter_by(participant_id=participant.id, user_id=user_id, status="Pending").all()
 
@@ -21,18 +20,18 @@ class PreparationEngine:
         if self.gemini.is_available():
             prompt = PREPARATION_PROMPT.format(
                 participant_name=participant.name,
-                health_score=rel.health_score if rel else "N/A",
-                meeting_count=rel.meeting_count if rel else 0,
+                health_score="N/A",
+                meeting_count=meeting_count,
                 memories=memories_text,
                 commitments=commitments_text,
             )
             return self.gemini.generate(prompt)
         else:
-            return self._generate_fallback(participant, rel, memories, commitments)
+            return self._generate_fallback(participant, meeting_count, memories, commitments)
 
-    def _generate_fallback(self, participant, rel, memories, commitments):
+    def _generate_fallback(self, participant, meeting_count, memories, commitments):
         lines = [f"--- Preparation Report for {participant.name} ---"]
-        lines.append(f"\nRelationship Health: {rel.health_score:.1f}/10" if rel else "\nRelationship: New contact")
+        lines.append(f"\nMeetings recorded: {meeting_count}")
         if memories:
             lines.append("\nKey Memories:")
             for m in memories[:5]:

@@ -2,7 +2,6 @@ from models.participant import Participant
 from models.meeting import Meeting
 from models.memory import Memory
 from models.action_item import ActionItem
-from models.relationship import Relationship
 
 
 class DashboardService:

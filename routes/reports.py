@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 from models.participant import Participant
 from models.meeting import Meeting
 from models.memory import Memory
-from models.relationship import Relationship
 from ai.preparation_engine import PreparationEngine
 from services.pdf_service import PDFService
 
@@ -63,5 +62,4 @@ def preparation_report(meeting_id):
 def participant_report(participant_id):
     participant = Participant.query.filter_by(id=participant_id, user_id=current_user.id).first_or_404()
     memories = Memory.query.filter_by(participant_id=participant_id, user_id=current_user.id).all()
-    relationship = Relationship.query.filter_by(participant_id=participant_id, user_id=current_user.id).first()
-    return render_template("reports/participant_report.html", participant=participant, memories=memories, relationship=relationship)
+    return render_template("reports/participant_report.html", participant=participant, memories=memories)
