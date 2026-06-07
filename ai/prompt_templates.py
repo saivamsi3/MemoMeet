@@ -3,6 +3,7 @@ Analyze the following meeting summary and extract key information:
 
 Meeting Title: {title}
 Date: {date}
+Participants: {participants}
 Discussion Summary: {summary}
 Key Decisions: {decisions}
 Action Items: {actions}
@@ -16,7 +17,16 @@ Extract the following:
 5. PREFERENCES: Preferences expressed
 6. DECISIONS: Key decisions made
 
-Format each as a clear, concise bullet point.
+For each bullet point extracted, attribute it to one of the meeting participants listed above if it is specifically about or stated by them.
+Format the attribution prefix as `[Participant Name]: bullet point content`.
+If the point is general or applies to the whole meeting / multiple participants, format it as `[General]: bullet point content`.
+
+Example format:
+FACTS:
+- [Alice Smith]: Likes working in the morning.
+- [General]: The client requested a demo on Friday.
+
+Format each as a clear, concise bullet point following this exact pattern.
 """
 
 PREPARATION_PROMPT = """
