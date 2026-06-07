@@ -1,0 +1,30 @@
+{% extends "layout/base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Notifications</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Notifications</h1>
+</div>
+
+{% if notifications %}
+    <div class="list-group">
+        {% for n in notifications %}
+            <div class="list-group-item {% if not n.is_read %}list-group-item-primary{% endif %}">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ n.title }}</h6>
+                    <small>{{ n.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+                <p class="mb-1">{{ n.message }}</p>
+                {% if not n.is_read %}
+                    <a href="{{ url_for('notifications.mark_read', id=n.id) }}" class="btn btn-sm btn-outline-secondary mt-1">Mark as read</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No notifications yet.</p>
+{% endif %}
+{% endblock %}

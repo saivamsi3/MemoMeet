@@ -1,0 +1,61 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ meeting.title }}{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('meetings.list_meetings') }}">Meetings</a></li>
+<li class="breadcrumb-item active">{{ meeting.title }}</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ meeting.title }}</h1>
+    <div>
+        <a href="{{ url_for('meetings.edit_meeting', id=meeting.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+        <a href="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}" class="btn btn-outline-info"><i class="bi bi-file-text"></i> Report</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">Meeting Info</div>
+            <div class="card-body">
+                <p><strong>Date:</strong> {{ meeting.date.strftime('%B %d, %Y') }}</p>
+                <p><strong>Participants:</strong></p>
+                <ul>
+                    {% for mp in meeting.participants %}
+                        <li><a href="{{ url_for('participants.participant_details', id=mp.participant.id) }}">{{ mp.participant.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if meeting.discussion_summary %}
+    <div class="card mb-3">
+        <div class="card-header">Discussion Summary</div>
+        <div class="card-body">{{ meeting.discussion_summary }}</div>
+    </div>
+{% endif %}
+
+{% if meeting.key_decisions %}
+    <div class="card mb-3">
+        <div class="card-header">Key Decisions</div>
+        <div class="card-body">{{ meeting.key_decisions }}</div>
+    </div>
+{% endif %}
+
+{% if meeting.action_items %}
+    <div class="card mb-3">
+        <div class="card-header">Action Items</div>
+        <div class="card-body">{{ meeting.action_items }}</div>
+    </div>
+{% endif %}
+
+{% if meeting.participant_observations %}
+    <div class="card mb-3">
+        <div class="card-header">Participant Observations</div>
+        <div class="card-body">{{ meeting.participant_observations }}</div>
+    </div>
+{% endif %}
+{% endblock %}

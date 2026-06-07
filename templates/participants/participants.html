@@ -1,0 +1,41 @@
+{% extends "layout/base.html" %}
+{% block title %}Participants{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Participants</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Participants</h1>
+    <a href="{{ url_for('participants.add_participant') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Participant</a>
+</div>
+
+<form class="mb-3" method="GET">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search participants..." value="{{ search }}">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </div>
+</form>
+
+{% if participants %}
+    <div class="row">
+        {% for p in participants %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ p.name }}</h5>
+                        <p class="card-text text-muted">
+                            {% if p.email %}<i class="bi bi-envelope"></i> {{ p.email }}<br>{% endif %}
+                            {% if p.organization %}<i class="bi bi-building"></i> {{ p.organization }}{% endif %}
+                        </p>
+                        <a href="{{ url_for('participants.participant_details', id=p.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('participants.edit_participant', id=p.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No participants found. <a href="{{ url_for('participants.add_participant') }}">Add your first participant</a></p>
+{% endif %}
+{% endblock %}

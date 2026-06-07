@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% block title %}Create Meeting{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('meetings.list_meetings') }}">Meetings</a></li>
+<li class="breadcrumb-item active">Create</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create Meeting</h1>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Title *</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date *</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Participants</label>
+                        <select name="participants" class="form-select" multiple>
+                            {% for p in participants %}
+                                <option value="{{ p.id }}">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Discussion Summary</label>
+                        <textarea name="discussion_summary" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Key Decisions</label>
+                        <textarea name="key_decisions" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Action Items</label>
+                        <textarea name="action_items" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Participant Observations</label>
+                        <textarea name="participant_observations" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Meeting</button>
+                    <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

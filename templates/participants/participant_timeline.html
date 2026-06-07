@@ -1,0 +1,13 @@
+{% extends "layout/base.html" %}
+{% block title %}Participant Timeline{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
+<li class="breadcrumb-item active">Timeline</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Participant Timeline</h1>
+</div>
+<p class="text-muted">Timeline view of interactions with this participant.</p>
+{% endblock %}

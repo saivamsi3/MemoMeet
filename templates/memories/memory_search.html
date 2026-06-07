@@ -1,0 +1,55 @@
+{% extends "layout/base.html" %}
+{% block title %}Search{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Search</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Search</h1>
+</div>
+
+<form class="mb-4" method="GET" action="{{ url_for('search.search') }}">
+    <div class="input-group input-group-lg">
+        <input type="text" name="q" class="form-control" placeholder="Search participants, meetings, memories..." value="{{ query or '' }}">
+        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+    </div>
+</form>
+
+{% if query %}
+    <h5>Results for "{{ query }}"</h5>
+    {% if participants %}
+        <div class="card mb-3">
+            <div class="card-header">Participants</div>
+            <div class="list-group list-group-flush">
+                {% for p in participants %}
+                    <a href="{{ url_for('participants.participant_details', id=p.id) }}" class="list-group-item">{{ p.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if meetings %}
+        <div class="card mb-3">
+            <div class="card-header">Meetings</div>
+            <div class="list-group list-group-flush">
+                {% for m in meetings %}
+                    <a href="{{ url_for('meetings.meeting_details', id=m.id) }}" class="list-group-item">{{ m.title }} - {{ m.date.strftime('%b %d, %Y') }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if memories %}
+        <div class="card mb-3">
+            <div class="card-header">Memories</div>
+            <div class="list-group list-group-flush">
+                {% for m in memories %}
+                    <div class="list-group-item">{{ m.content[:150] }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if not participants and not meetings and not memories %}
+        <p class="text-muted">No results found.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

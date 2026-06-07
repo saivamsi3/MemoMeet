@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% block title %}Edit Participant{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
+<li class="breadcrumb-item active">Edit</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Participant</h1>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Name *</label>
+                        <input type="text" name="name" class="form-control" value="{{ participant.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ participant.email or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Organization</label>
+                        <input type="text" name="organization" class="form-control" value="{{ participant.organization or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input type="text" name="role" class="form-control" value="{{ participant.role or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Interests</label>
+                        <textarea name="interests" class="form-control" rows="2">{{ participant.interests or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Goals</label>
+                        <textarea name="goals" class="form-control" rows="2">{{ participant.goals or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Preferences</label>
+                        <textarea name="preferences" class="form-control" rows="2">{{ participant.preferences or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea name="notes" class="form-control" rows="3">{{ participant.notes or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="{{ url_for('participants.list_participants') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "layout/base.html" %}
+{% block title %}Preparation Report{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('meetings.list_meetings') }}">Meetings</a></li>
+<li class="breadcrumb-item active">Preparation Report</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Preparation Report</h1>
+    <button class="btn btn-outline-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>{{ meeting.title }}</h5>
+        <small class="text-muted">{{ meeting.date.strftime('%B %d, %Y') }}</small>
+    </div>
+    <div class="card-body">
+        <p>Use this report to prepare for your meeting. Review participant history, past memories, and open commitments.</p>
+        <a href="{{ url_for('meetings.meeting_details', id=meeting.id) }}" class="btn btn-sm btn-outline-secondary">Back to Meeting</a>
+    </div>
+</div>
+{% endblock %}

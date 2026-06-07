@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% block title %}Action Items{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Action Items</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Action Items</h1>
+    <div>
+        <a href="{{ url_for('action_items.list_action_items') }}" class="btn btn-sm btn-outline-secondary">All</a>
+        <a href="{{ url_for('action_items.list_action_items', status='Pending') }}" class="btn btn-sm btn-outline-warning">Pending</a>
+        <a href="{{ url_for('action_items.list_action_items', status='In Progress') }}" class="btn btn-sm btn-outline-info">In Progress</a>
+        <a href="{{ url_for('action_items.list_action_items', status='Completed') }}" class="btn btn-sm btn-outline-success">Completed</a>
+        <a href="{{ url_for('action_items.list_action_items', status='Overdue') }}" class="btn btn-sm btn-outline-danger">Overdue</a>
+    </div>
+</div>
+
+{% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Owner</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.task[:80] }}</td>
+                        <td>{{ item.owner or 'Unassigned' }}</td>
+                        <td>{{ item.deadline.strftime('%b %d, %Y') if item.deadline else 'No deadline' }}</td>
+                        <td><span class="badge bg-{{ 'warning' if item.status == 'Pending' else 'info' if item.status == 'In Progress' else 'success' if item.status == 'Completed' else 'danger' }}">{{ item.status }}</span></td>
+                        <td>
+                            <form method="POST" action="{{ url_for('action_items.update_status', id=item.id) }}" class="d-inline">
+                                <select name="status" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
+                                    <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="In Progress" {% if item.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="Completed" {% if item.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    <option value="Overdue" {% if item.status == 'Overdue' %}selected{% endif %}>Overdue</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted">No action items found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+[project]
+name = "memomeet"
+version = "1.0.0"
+description = "AI-powered meeting intelligence platform"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0.0",
+    "flask-sqlalchemy>=3.1.1",
+    "flask-login>=0.6.3",
+    "flask-wtf>=1.2.1",
+    "python-dotenv>=1.0.0",
+    "google-generativeai>=0.8.3",
+    "email-validator>=2.1.0",
+    "werkzeug>=3.0.1",
+    "wtforms>=3.1.1",
+    "gunicorn>=21.2.0",
+    "bleach>=6.1.0",
+    "reportlab>=4.1.0",
+    "pillow>=10.4.0",
+]
+
+[project.scripts]
+memomeet = "main:create_app"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0",
+]

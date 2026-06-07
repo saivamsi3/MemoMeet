@@ -1,0 +1,98 @@
+{% extends "layout/base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Analytics</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Analytics Dashboard</h1>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-bg-primary h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ total_participants }}</h5>
+                <p class="card-text">Participants</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-bg-success h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ total_meetings }}</h5>
+                <p class="card-text">Meetings</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-bg-info h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ total_memories }}</h5>
+                <p class="card-text">Memories</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-bg-warning h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ pending + in_progress }}</h5>
+                <p class="card-text">Open Tasks</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">Task Overview</div>
+            <div class="card-body">
+                <canvas id="taskChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">Relationship Scores</div>
+            <div class="card-body">
+                {% if relationships %}
+                    <canvas id="relationshipChart"></canvas>
+                {% else %}
+                    <p class="text-muted">No relationship data yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    {% if pending or in_progress or completed %}
+    new Chart(document.getElementById('taskChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Completed'],
+            datasets: [{
+                data: [{{ pending }}, {{ in_progress }}, {{ completed }}],
+                backgroundColor: ['#ffc107', '#0dcaf0', '#198754']
+            }]
+        }
+    });
+    {% endif %}
+    {% if relationships %}
+    new Chart(document.getElementById('relationshipChart'), {
+        type: 'bar',
+        data: {
+            labels: [{% for r in relationships %}'{{ r.participant.name[:15] }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Health Score',
+                data: [{% for r in relationships %}{{ r.health_score }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: '#0d6efd'
+            }]
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

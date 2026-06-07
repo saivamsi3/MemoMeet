@@ -1,0 +1,3 @@
+.priority-high { border-left: 4px solid #dc3545; }
+.priority-medium { border-left: 4px solid #ffc107; }
+.priority-low { border-left: 4px solid #0dcaf0; }

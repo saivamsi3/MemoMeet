@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% block title %}Participant Report{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
+<li class="breadcrumb-item active">Report: {{ participant.name }}</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Participant Report: {{ participant.name }}</h1>
+    <button class="btn btn-outline-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">Profile</div>
+            <div class="card-body">
+                <p><strong>Email:</strong> {{ participant.email or 'N/A' }}</p>
+                <p><strong>Organization:</strong> {{ participant.organization or 'N/A' }}</p>
+                <p><strong>Role:</strong> {{ participant.role or 'N/A' }}</p>
+                <p><strong>Goals:</strong> {{ participant.goals or 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+    {% if relationship %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">Relationship Health</div>
+                <div class="card-body">
+                    <h3 class="text-center">{{ "%.1f"|format(relationship.health_score) }} / 10</h3>
+                    <p class="text-center text-muted">Health Score</p>
+                    <p><strong>Meetings:</strong> {{ relationship.meeting_count }}</p>
+                    <p><strong>Engagement:</strong> {{ "%.0f"|format(relationship.engagement_level * 100) }}%</p>
+                    <p><strong>Task Completion:</strong> {{ "%.0f"|format(relationship.task_completion_rate * 100) }}%</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if memories %}
+    <div class="card mb-3">
+        <div class="card-header">Key Memories</div>
+        <div class="list-group list-group-flush">
+            {% for m in memories[:10] %}
+                <div class="list-group-item">
+                    <span class="badge bg-secondary">{{ m.memory_type }}</span>
+                    {{ m.content[:150] }}
+                    <small class="text-muted d-block">{{ m.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

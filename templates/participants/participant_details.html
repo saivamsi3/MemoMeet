@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ participant.name }}{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
+<li class="breadcrumb-item active">{{ participant.name }}</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ participant.name }}</h1>
+    <div>
+        <a href="{{ url_for('participants.edit_participant', id=participant.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+        <a href="{{ url_for('timeline.relationship_timeline', participant_id=participant.id) }}" class="btn btn-outline-info"><i class="bi bi-clock-history"></i> Timeline</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">Contact Information</div>
+            <div class="card-body">
+                <p><strong>Email:</strong> {{ participant.email or 'N/A' }}</p>
+                <p><strong>Organization:</strong> {{ participant.organization or 'N/A' }}</p>
+                <p><strong>Role:</strong> {{ participant.role or 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">Details</div>
+            <div class="card-body">
+                <p><strong>Interests:</strong> {{ participant.interests or 'N/A' }}</p>
+                <p><strong>Goals:</strong> {{ participant.goals or 'N/A' }}</p>
+                <p><strong>Preferences:</strong> {{ participant.preferences or 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Notes</div>
+    <div class="card-body">
+        {{ participant.notes or 'No notes added.' }}
+    </div>
+</div>
+{% endblock %}

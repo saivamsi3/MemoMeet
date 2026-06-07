@@ -1,0 +1,43 @@
+{% extends "layout/base.html" %}
+{% block title %}Memories{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Memories</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Memories</h1>
+    <div>
+        <a href="{{ url_for('memories.list_memories') }}" class="btn btn-sm btn-outline-secondary">All</a>
+        <a href="{{ url_for('memories.list_memories', type='fact') }}" class="btn btn-sm btn-outline-secondary">Facts</a>
+        <a href="{{ url_for('memories.list_memories', type='concern') }}" class="btn btn-sm btn-outline-secondary">Concerns</a>
+        <a href="{{ url_for('memories.list_memories', type='goal') }}" class="btn btn-sm btn-outline-secondary">Goals</a>
+        <a href="{{ url_for('memories.list_memories', type='commitment') }}" class="btn btn-sm btn-outline-secondary">Commitments</a>
+        <a href="{{ url_for('memories.list_memories', type='preference') }}" class="btn btn-sm btn-outline-secondary">Preferences</a>
+        <a href="{{ url_for('memories.list_memories', type='decision') }}" class="btn btn-sm btn-outline-secondary">Decisions</a>
+    </div>
+</div>
+
+{% if memories %}
+    <div class="list-group">
+        {% for m in memories %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">
+                        <span class="badge bg-{{ 'primary' if m.memory_type == 'fact' else 'warning' if m.memory_type == 'concern' else 'success' if m.memory_type == 'goal' else 'info' if m.memory_type == 'commitment' else 'secondary' if m.memory_type == 'preference' else 'dark' }}">
+                            {{ m.memory_type }}
+                        </span>
+                        {% if m.participant %}
+                            <a href="{{ url_for('participants.participant_details', id=m.participant.id) }}">{{ m.participant.name }}</a>
+                        {% endif %}
+                    </h6>
+                    <small class="text-muted">{{ m.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+                <p class="mb-1">{{ m.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No memories yet. Memories are extracted when meetings are analyzed.</p>
+{% endif %}
+{% endblock %}

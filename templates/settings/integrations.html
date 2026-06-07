@@ -1,0 +1,19 @@
+{% extends "layout/base.html" %}
+{% block title %}Integrations{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('settings.index') }}">Settings</a></li>
+<li class="breadcrumb-item active">Integrations</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Integrations</h1>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h5>Gemini AI</h5>
+        <p class="text-muted">Configure your Gemini API key to enable AI-powered features.</p>
+        <p>Set your API key in the <code>.env</code> file as <code>GEMINI_API_KEY</code>.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layout/base.html" %}
+{% block title %}Meetings{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Meetings</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Meetings</h1>
+    <a href="{{ url_for('meetings.create_meeting') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Create Meeting</a>
+</div>
+
+{% if meetings %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meeting in meetings %}
+                    <tr>
+                        <td><a href="{{ url_for('meetings.meeting_details', id=meeting.id) }}">{{ meeting.title }}</a></td>
+                        <td>{{ meeting.date.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('meetings.edit_meeting', id=meeting.id) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                            <a href="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-file-text"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted">No meetings yet. <a href="{{ url_for('meetings.create_meeting') }}">Create your first meeting</a></p>
+{% endif %}
+{% endblock %}

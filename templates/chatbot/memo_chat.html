@@ -1,0 +1,49 @@
+{% extends "layout/base.html" %}
+{% block title %}Memo Chat{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Memo Chat</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Memo Chat</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-robot me-2"></i>Ask about your meetings, participants, and memories
+            </div>
+            <div class="card-body" id="chatMessages" style="height: 400px; overflow-y: auto;">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-chat-dots" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Ask me anything about your meetings and participants!</p>
+                    <small>Try: "What concerns has John mentioned?" or "Summarize my meetings"</small>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Type your question...">
+                    <button class="btn btn-primary" id="sendBtn"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Sample Questions</div>
+            <div class="list-group list-group-flush">
+                <button class="list-group-item list-group-item-action sample-q">What concerns have been mentioned?</button>
+                <button class="list-group-item list-group-item-action sample-q">Summarize my recent meetings</button>
+                <button class="list-group-item list-group-item-action sample-q">Which commitments are pending?</button>
+                <button class="list-group-item list-group-item-action sample-q">What goals have been discussed?</button>
+                <button class="list-group-item list-group-item-action sample-q">Show me recent decisions</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

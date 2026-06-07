@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+{% block title %}Recommendations{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+<li class="breadcrumb-item active">Recommendations</li>
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Recommendations</h1>
+</div>
+
+{% if recommendations %}
+    <div class="list-group">
+        {% for rec in recommendations %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">
+                        <span class="badge bg-{{ 'danger' if rec.priority == 'high' else 'warning' if rec.priority == 'medium' else 'info' }}">
+                            {{ rec.priority }}
+                        </span>
+                        {{ rec.recommendation_type | replace('_', ' ') | title }}
+                    </h6>
+                    <small>{{ rec.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+                <p class="mb-1">{{ rec.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No recommendations yet. Recommendations will appear as you use MemoMeet.</p>
+{% endif %}
+{% endblock %}
