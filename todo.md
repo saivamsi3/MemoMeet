@@ -50,21 +50,21 @@ Checklist generated from `plan.md`.
 - [x] Deliver: participant management module
 
 ## Phase 3: Meeting Management System
-- [ ] Create meeting
-- [ ] Edit meeting
-- [ ] Delete meeting
-- [ ] View meeting
-- [ ] Add meeting title field
-- [ ] Add meeting date field
-- [ ] Add meeting participants field
-- [ ] Add discussion summary field
-- [ ] Add key decisions field
-- [ ] Add action items field
-- [ ] Add participant observations field
-- [ ] Show past meetings
-- [ ] Show meeting details
-- [ ] Show linked participants
-- [ ] Deliver: meeting management module
+- [x] Create meeting
+- [x] Edit meeting
+- [x] Delete meeting
+- [x] View meeting
+- [x] Add meeting title field
+- [x] Add meeting date field
+- [x] Add meeting participants field
+- [x] Add discussion summary field
+- [x] Add key decisions field
+- [x] Add action items field
+- [x] Add participant observations field
+- [x] Show past meetings
+- [x] Show meeting details
+- [x] Show linked participants
+- [x] Deliver: meeting management module
 
 ## Phase 4: Gemini AI Integration
 - [ ] Configure Gemini API key
