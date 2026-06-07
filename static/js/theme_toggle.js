@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!toggle) return;
 
     const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-bs-theme') || 'light';
+    const currentTheme = html.getAttribute('data-bs-theme') || 'dark';
 
     toggle.addEventListener('click', function() {
         const newTheme = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
