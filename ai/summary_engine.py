@@ -1,9 +1,9 @@
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 
 
 class SummaryEngine:
     def __init__(self):
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def generate_summary(self, meeting):
         if not self.gemini.is_available():

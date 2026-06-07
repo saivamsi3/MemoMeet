@@ -1,4 +1,4 @@
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 from ai.prompt_templates import CHAT_PROMPT
 from models.memory import Memory
 from models.meeting import Meeting
@@ -9,7 +9,7 @@ from models.participant import Participant
 class MemoryChatEngine:
     def __init__(self, user_id):
         self.user_id = user_id
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def _get_context(self, question):
         lines = []

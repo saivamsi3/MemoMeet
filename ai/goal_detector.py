@@ -1,9 +1,9 @@
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 
 
 class GoalDetector:
     def __init__(self):
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def detect(self, text):
         if not self.gemini.is_available():

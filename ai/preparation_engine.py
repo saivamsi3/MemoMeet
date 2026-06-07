@@ -1,4 +1,4 @@
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 from ai.prompt_templates import PREPARATION_PROMPT
 from models.memory import Memory
 from models.action_item import ActionItem
@@ -8,7 +8,7 @@ from services.relationship_service import RelationshipService
 
 class PreparationEngine:
     def __init__(self):
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def generate_report(self, participant, user_id):
         rel = Relationship.query.filter_by(user_id=user_id, participant_id=participant.id).first()

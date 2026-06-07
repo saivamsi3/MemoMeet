@@ -1,12 +1,12 @@
 from extensions import db
 from models.memory import Memory
-from ai.gemini_service import GeminiService
+from ai.groq_service import GroqService
 from ai.prompt_templates import ANALYSIS_PROMPT
 
 
 class MemoryEngine:
     def __init__(self):
-        self.gemini = GeminiService()
+        self.gemini = GroqService()
 
     def extract_memories(self, meeting):
         participants_list = []
