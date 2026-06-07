@@ -1,41 +1,122 @@
 {% extends "layout/base.html" %}
 {% block title %}Participants{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/participants.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item active">Participants</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2">Participants</h1>
-    <a href="{{ url_for('participants.add_participant') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Participant</a>
+    <a href="{{ url_for('participants.add_participant') }}" class="btn btn-primary d-inline-flex align-items-center gap-2">
+        <i class="bi bi-person-plus-fill"></i> Add Participant
+    </a>
 </div>
 
-<form class="mb-3" method="GET">
-    <div class="input-group">
-        <input type="text" name="search" class="form-control" placeholder="Search participants..." value="{{ search }}">
-        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+<form class="mb-4" method="GET">
+    <div class="search-container">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" name="search" class="form-control search-input" placeholder="Search by name, email, role, interests..." value="{{ search }}">
     </div>
 </form>
 
 {% if participants %}
     <div class="row">
         {% for p in participants %}
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ p.name }}</h5>
-                        <p class="card-text text-muted">
-                            {% if p.email %}<i class="bi bi-envelope"></i> {{ p.email }}<br>{% endif %}
-                            {% if p.organization %}<i class="bi bi-building"></i> {{ p.organization }}{% endif %}
-                        </p>
-                        <a href="{{ url_for('participants.participant_details', id=p.id) }}" class="btn btn-sm btn-outline-primary">View</a>
-                        <a href="{{ url_for('participants.edit_participant', id=p.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            {# Generate deterministic gradient based on ID #}
+            {% set grad_idx = p.id % 5 %}
+            {% if grad_idx == 0 %}
+                {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+            {% elif grad_idx == 1 %}
+                {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+            {% elif grad_idx == 2 %}
+                {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+            {% elif grad_idx == 3 %}
+                {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+            {% else %}
+                {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+            {% endif %}
+            
+            {# Extract initials #}
+            {% set parts = p.name.split() %}
+            {% set initials = parts[0][0] | upper %}
+            {% if parts | length > 1 %}
+                {% set initials = initials + parts[1][0] | upper %}
+            {% endif %}
+
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card participant-card h-100">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="avatar-initials-sm" style="background: {{ gradient }};">
+                                    {{ initials }}
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1 text-truncate" style="max-width: 200px;">{{ p.name }}</h5>
+                                    {% if p.role %}
+                                        <span class="badge bg-secondary text-light fs-8">{{ p.role }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <p class="card-text text-secondary mb-3 small">
+                                {% if p.email %}
+                                    <span class="d-block mb-1"><i class="bi bi-envelope me-2 text-muted"></i>{{ p.email }}</span>
+                                {% endif %}
+                                {% if p.organization %}
+                                    <span class="d-block mb-1"><i class="bi bi-building me-2 text-muted"></i>{{ p.organization }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('participants.participant_details', id=p.id) }}" class="btn btn-sm btn-outline-primary px-3" title="View details">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a href="{{ url_for('participants.edit_participant', id=p.id) }}" class="btn btn-sm btn-outline-secondary px-3" title="Edit details">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger px-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{ p.id }}" title="Delete participant">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal for each participant -->
+            <div class="modal fade" id="deleteModal{{ p.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Participant</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete <strong>{{ p.name }}</strong>? This action cannot be undone.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a href="{{ url_for('participants.delete_participant', id=p.id) }}" class="btn btn-danger">Delete</a>
+                        </div>
                     </div>
                 </div>
             </div>
         {% endfor %}
     </div>
 {% else %}
-    <p class="text-muted">No participants found. <a href="{{ url_for('participants.add_participant') }}">Add your first participant</a></p>
+    <div class="text-center py-5">
+        <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-3 fs-5">No participants found.</p>
+        <a href="{{ url_for('participants.add_participant') }}" class="btn btn-primary mt-2">Add your first participant</a>
+    </div>
 {% endif %}
 {% endblock %}

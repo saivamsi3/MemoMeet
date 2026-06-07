@@ -12,7 +12,16 @@ def list_participants():
     search = request.args.get("search", "")
     query = Participant.query.filter_by(user_id=current_user.id)
     if search:
-        query = query.filter(Participant.name.ilike(f"%{search}%"))
+        query = query.filter(
+            (Participant.name.ilike(f"%{search}%")) |
+            (Participant.email.ilike(f"%{search}%")) |
+            (Participant.organization.ilike(f"%{search}%")) |
+            (Participant.role.ilike(f"%{search}%")) |
+            (Participant.interests.ilike(f"%{search}%")) |
+            (Participant.goals.ilike(f"%{search}%")) |
+            (Participant.preferences.ilike(f"%{search}%")) |
+            (Participant.notes.ilike(f"%{search}%"))
+        )
     participants = query.order_by(Participant.name).all()
     return render_template("participants/participants.html", participants=participants, search=search)
 

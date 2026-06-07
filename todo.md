@@ -30,24 +30,24 @@ Checklist generated from `plan.md`.
 - [x] Deliver: database connectivity works
 
 ## Phase 2: Participant Management System
-- [ ] Add participant
-- [ ] Edit participant
-- [ ] Delete participant
-- [ ] View participant
-- [ ] Search participant
-- [ ] Store participant name
-- [ ] Store participant email
-- [ ] Store participant organization
-- [ ] Store participant role
-- [ ] Store participant interests
-- [ ] Store participant goals
-- [ ] Store participant preferences
-- [ ] Store participant notes
-- [ ] Create participants list page
-- [ ] Create participant profile page
-- [ ] Create add participant form
-- [ ] Create edit participant form
-- [ ] Deliver: participant management module
+- [x] Add participant
+- [x] Edit participant
+- [x] Delete participant
+- [x] View participant
+- [x] Search participant
+- [x] Store participant name
+- [x] Store participant email
+- [x] Store participant organization
+- [x] Store participant role
+- [x] Store participant interests
+- [x] Store participant goals
+- [x] Store participant preferences
+- [x] Store participant notes
+- [x] Create participants list page
+- [x] Create participant profile page
+- [x] Create add participant form
+- [x] Create edit participant form
+- [x] Deliver: participant management module
 
 ## Phase 3: Meeting Management System
 - [ ] Create meeting

@@ -1,46 +1,169 @@
 {% extends "layout/base.html" %}
 {% block title %}{{ participant.name }}{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/participants.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
 <li class="breadcrumb-item active">{{ participant.name }}</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{ participant.name }}</h1>
-    <div>
-        <a href="{{ url_for('participants.edit_participant', id=participant.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
-        <a href="{{ url_for('timeline.relationship_timeline', participant_id=participant.id) }}" class="btn btn-outline-info"><i class="bi bi-clock-history"></i> Timeline</a>
+{# Generate deterministic gradient based on ID #}
+{% set grad_idx = participant.id % 5 %}
+{% if grad_idx == 0 %}
+    {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+{% elif grad_idx == 1 %}
+    {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+{% elif grad_idx == 2 %}
+    {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+{% elif grad_idx == 3 %}
+    {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+{% else %}
+    {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+{% endif %}
+
+{# Extract initials #}
+{% set parts = participant.name.split() %}
+{% set initials = parts[0][0] | upper %}
+{% if parts | length > 1 %}
+    {% set initials = initials + parts[1][0] | upper %}
+{% endif %}
+
+<div class="card mb-4 border-0 bg-transparent">
+    <div class="card-body p-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="avatar-initials" style="background: {{ gradient }};">
+                {{ initials }}
+            </div>
+            <div>
+                <h1 class="h2 mb-1">{{ participant.name }}</h1>
+                {% if participant.role %}
+                    <span class="badge bg-primary text-light px-3 py-2 rounded-pill fs-7">{{ participant.role }}</span>
+                {% endif %}
+                {% if participant.organization %}
+                    <span class="text-secondary ms-2"><i class="bi bi-building me-1"></i>{{ participant.organization }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('participants.list_participants') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+            <a href="{{ url_for('participants.edit_participant', id=participant.id) }}" class="btn btn-primary">
+                <i class="bi bi-pencil me-1"></i> Edit
+            </a>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash me-1"></i> Delete
+            </button>
+        </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">Contact Information</div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Contact Info</div>
             <div class="card-body">
-                <p><strong>Email:</strong> {{ participant.email or 'N/A' }}</p>
-                <p><strong>Organization:</strong> {{ participant.organization or 'N/A' }}</p>
-                <p><strong>Role:</strong> {{ participant.role or 'N/A' }}</p>
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-1">Email</label>
+                    <span class="fs-5 text-truncate d-block">
+                        {% if participant.email %}
+                            <a href="mailto:{{ participant.email }}" class="text-decoration-none">{{ participant.email }}</a>
+                        {% else %}
+                            <span class="text-muted small">Not provided</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-1">Organization</label>
+                    <span class="fs-5">{{ participant.organization or 'Not provided' }}</span>
+                </div>
+                <div>
+                    <label class="text-muted small d-block mb-1">Role / Position</label>
+                    <span class="fs-5">{{ participant.role or 'Not provided' }}</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">Details</div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-tags-fill me-2 text-accent"></i>Relationship Details</div>
             <div class="card-body">
-                <p><strong>Interests:</strong> {{ participant.interests or 'N/A' }}</p>
-                <p><strong>Goals:</strong> {{ participant.goals or 'N/A' }}</p>
-                <p><strong>Preferences:</strong> {{ participant.preferences or 'N/A' }}</p>
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Interests</label>
+                    <div>
+                        {% if participant.interests %}
+                            {% for tag in participant.interests.split(',') %}
+                                {% if tag.strip() %}
+                                    <span class="badge-tag tag-interest">{{ tag.strip() }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No interests added</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small d-block mb-2">Goals</label>
+                    <div>
+                        {% if participant.goals %}
+                            {% for tag in participant.goals.split(',') %}
+                                {% if tag.strip() %}
+                                    <span class="badge-tag tag-goal">{{ tag.strip() }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No goals added</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <label class="text-muted small d-block mb-2">Preferences / Quirks</label>
+                    <div>
+                        {% if participant.preferences %}
+                            {% for tag in participant.preferences.split(',') %}
+                                {% if tag.strip() %}
+                                    <span class="badge-tag tag-preference">{{ tag.strip() }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No preferences added</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card mb-3">
-    <div class="card-header">Notes</div>
-    <div class="card-body">
-        {{ participant.notes or 'No notes added.' }}
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-journal-text me-2 text-primary"></i>Background Notes</div>
+    <div class="card-body bg-light-subtle">
+        <p class="mb-0" style="white-space: pre-line;">{{ participant.notes or 'No background notes are stored for this participant.' }}</p>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Participant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>{{ participant.name }}</strong>? This action cannot be undone and will remove all references.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{{ url_for('participants.delete_participant', id=participant.id) }}" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

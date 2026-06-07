@@ -38,3 +38,16 @@ def preferences():
 @login_required
 def integrations():
     return render_template("settings/integrations.html")
+
+
+@settings_bp.route("/settings/toggle-theme", methods=["POST"])
+@login_required
+def toggle_theme():
+    data = request.get_json() or {}
+    theme = data.get("theme", "light")
+    if theme in ["light", "dark"]:
+        current_user.theme = theme
+        db.session.commit()
+        return {"status": "success", "theme": theme}
+    return {"status": "error", "message": "Invalid theme"}, 400
+

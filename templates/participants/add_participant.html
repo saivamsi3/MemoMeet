@@ -1,53 +1,78 @@
 {% extends "layout/base.html" %}
 {% block title %}Add Participant{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/participants.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item"><a href="{{ url_for('participants.list_participants') }}">Participants</a></li>
 <li class="breadcrumb-item active">Add</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2">Add Participant</h1>
 </div>
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-transparent py-3 border-bottom"><i class="bi bi-person-fill-add me-2 text-primary"></i>Participant Profile Information</div>
+            <div class="card-body p-4">
                 <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Name *</label>
-                        <input type="text" name="name" class="form-control" required>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control" placeholder="e.g. john@example.com">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Organization / Company</label>
+                            <input type="text" name="organization" class="form-control" placeholder="e.g. Acme Corp">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Job Title / Role</label>
+                            <input type="text" name="role" class="form-control" placeholder="e.g. Technical Director">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Organization</label>
-                        <input type="text" name="organization" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        <input type="text" name="role" class="form-control">
-                    </div>
+                    
+                    <hr class="my-4 text-muted">
+                    
                     <div class="mb-3">
                         <label class="form-label">Interests</label>
-                        <textarea name="interests" class="form-control" rows="2"></textarea>
+                        <input type="text" name="interests" class="form-control" placeholder="e.g. Artificial Intelligence, Venture Capital, Sailing (comma-separated)">
+                        <div class="form-text text-muted">Separate multiple interests with commas.</div>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Goals</label>
-                        <textarea name="goals" class="form-control" rows="2"></textarea>
+                        <input type="text" name="goals" class="form-control" placeholder="e.g. Scale operations, Expand in EU, Launch MVP (comma-separated)">
+                        <div class="form-text text-muted">Separate multiple goals with commas.</div>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Preferences</label>
-                        <textarea name="preferences" class="form-control" rows="2"></textarea>
+                        <input type="text" name="preferences" class="form-control" placeholder="e.g. Prefers email, Morning meetings, No jargon (comma-separated)">
+                        <div class="form-text text-muted">Separate multiple preferences with commas.</div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-control" rows="3"></textarea>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Notes & Background Context</label>
+                        <textarea name="notes" class="form-control" rows="4" placeholder="Add any extra details, how you met, background stories..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ url_for('participants.list_participants') }}" class="btn btn-secondary">Cancel</a>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-1"></i> Save Profile</button>
+                        <a href="{{ url_for('participants.list_participants') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
                 </form>
             </div>
         </div>

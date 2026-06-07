@@ -48,7 +48,9 @@ def create_app(config_class=Config):
 
     with app.app_context():
         from database.db import init_db
+        from database.seed import seed_database
         init_db()
+        seed_database()
 
     return app
 
