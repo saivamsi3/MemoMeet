@@ -5,6 +5,8 @@ from extensions import db
 from models.meeting import Meeting
 from models.participant import Participant
 from models.meeting_participant import MeetingParticipant
+from models.action_item import ActionItem
+from models.memory import Memory
 from ai.memory_engine import MemoryEngine
 from services.relationship_service import RelationshipService
 
@@ -155,7 +157,11 @@ def delete_meeting(id):
     meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     # capture participants to update relationship metrics after deletion
     participant_ids = [mp.participant_id for mp in MeetingParticipant.query.filter_by(meeting_id=meeting.id).all()]
+    # remove meeting-participant links
     MeetingParticipant.query.filter_by(meeting_id=meeting.id).delete()
+    # remove action items and memories tied to this meeting to avoid FK constraint errors
+    ActionItem.query.filter_by(meeting_id=meeting.id).delete()
+    Memory.query.filter_by(meeting_id=meeting.id).delete()
     db.session.delete(meeting)
     db.session.commit()
     for pid in participant_ids:

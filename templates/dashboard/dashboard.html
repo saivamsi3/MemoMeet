@@ -228,9 +228,13 @@
                                                 <td><span class="fw-semibold">{{ item.task }}</span></td>
                                                 <td>{{ item.owner or 'Unassigned' }}</td>
                                                 <td>
-                                                    <span class="text-danger fw-semibold">
-                                                        <i class="bi bi-clock-fill me-1"></i> {{ item.deadline.strftime('%b %d, %Y') }}
-                                                    </span>
+                                                    {% if item.deadline %}
+                                                        <span class="text-danger fw-semibold">
+                                                            <i class="bi bi-clock-fill me-1"></i> {{ item.deadline.strftime('%b %d, %Y') }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted italic">No deadline</span>
+                                                    {% endif %}
                                                 </td>
                                                 <td>
                                                     <a href="{{ url_for('meetings.meeting_details', id=item.meeting_id) }}" class="text-decoration-none small">
