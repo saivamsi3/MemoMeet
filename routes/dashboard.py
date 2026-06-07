@@ -13,8 +13,10 @@ dashboard_bp = Blueprint("dashboard", __name__)
 @login_required
 def index():
     from services.action_item_service import ActionItemService
-    # Mark overdue tasks first
+    from services.notification_service import NotificationService
+    # Mark overdue tasks and generate smart alerts first
     ActionItemService.check_overdue_tasks(current_user.id)
+    NotificationService.generate_smart_alerts(current_user.id)
 
     participants_count = Participant.query.filter_by(user_id=current_user.id).count()
     meetings_count = Meeting.query.filter_by(user_id=current_user.id).count()

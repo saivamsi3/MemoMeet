@@ -169,8 +169,8 @@ Note: Chat UI is available at `/chat`. Backend uses `ai/memory_chat_engine.py` t
 
 ## Next Actions
 - [x] Show upcoming meetings widget
-- [ ] Add JSON endpoints for live charts
-- [ ] Add unit tests for analytics aggregations
+- [x] Add JSON endpoints for live charts
+- [x] Add unit tests for analytics aggregations
 - [x] Deliver: interactive analytics dashboard
 
 
@@ -181,7 +181,7 @@ Note: Chat UI is available at `/chat`. Backend uses `ai/memory_chat_engine.py` t
 - [x] Classify memory: High Priority
 - [x] Classify memory: Medium Priority
 - [x] Classify memory: Low Priority
-- [ ] Add smart alerts for missed follow-ups (in-progress)
-- [ ] Add smart alerts for overdue commitments
-- [ ] Add smart alerts for declining engagement
-- [ ] Deliver: advanced intelligence layer (in-progress)
+- [x] Add smart alerts for missed follow-ups
+- [x] Add smart alerts for overdue commitments
+- [x] Add smart alerts for declining engagement
+- [x] Deliver: advanced intelligence layer

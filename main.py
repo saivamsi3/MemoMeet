@@ -16,6 +16,15 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return db.session.get(User, int(user_id))
 
+    @app.context_processor
+    def inject_unread_notifications():
+        from flask_login import current_user
+        from models.notification import Notification
+        if current_user.is_authenticated:
+            count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+            return {'unread_notifications_count': count}
+        return {'unread_notifications_count': 0}
+
     from routes.auth import auth_bp
     from routes.dashboard import dashboard_bp
     from routes.participants import participants_bp
