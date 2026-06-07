@@ -6,6 +6,7 @@ from models.meeting import Meeting
 from models.participant import Participant
 from models.meeting_participant import MeetingParticipant
 from ai.memory_engine import MemoryEngine
+from services.relationship_service import RelationshipService
 
 meetings_bp = Blueprint("meetings", __name__)
 
@@ -51,6 +52,12 @@ def create_meeting():
             db.session.add(mp)
 
         db.session.commit()
+        # Update relationships for involved participants
+        for pid in participant_ids:
+            try:
+                RelationshipService.update_relationship(current_user.id, int(pid))
+            except Exception:
+                pass
         flash("Meeting created", "success")
         return redirect(url_for("meetings.list_meetings"))
     return render_template("meetings/create_meeting.html", participants=participants)
@@ -131,6 +138,12 @@ def edit_meeting(id):
             mp = MeetingParticipant(meeting_id=meeting.id, participant_id=int(pid))
             db.session.add(mp)
         db.session.commit()
+        # Update relationships for current participants
+        for pid in participant_ids:
+            try:
+                RelationshipService.update_relationship(current_user.id, int(pid))
+            except Exception:
+                pass
         flash("Meeting updated", "success")
         return redirect(url_for("meetings.list_meetings"))
     return render_template("meetings/edit_meeting.html", meeting=meeting, participants=participants, selected_participant_ids=selected_participant_ids)
@@ -140,8 +153,15 @@ def edit_meeting(id):
 @login_required
 def delete_meeting(id):
     meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    # capture participants to update relationship metrics after deletion
+    participant_ids = [mp.participant_id for mp in MeetingParticipant.query.filter_by(meeting_id=meeting.id).all()]
     MeetingParticipant.query.filter_by(meeting_id=meeting.id).delete()
     db.session.delete(meeting)
     db.session.commit()
+    for pid in participant_ids:
+        try:
+            RelationshipService.update_relationship(current_user.id, pid)
+        except Exception:
+            pass
     flash("Meeting deleted", "success")
     return redirect(url_for("meetings.list_meetings"))

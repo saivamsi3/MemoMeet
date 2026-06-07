@@ -112,15 +112,18 @@ Checklist generated from `plan.md`.
 - [x] Deliver: commitment tracking
 
 ## Phase 7: Relationship Intelligence Engine
-- [ ] Calculate number of meetings
-- [ ] Calculate engagement level
-- [ ] Calculate meeting frequency
-- [ ] Calculate task completion rate
-- [ ] Generate relationship health score
-- [ ] Show active relationships
-- [ ] Show at-risk relationships
-- [ ] Show strong relationships
-- [ ] Deliver: relationship analytics
+## Phase 7: Relationship Intelligence Engine
+- [x] Calculate number of meetings
+- [x] Calculate engagement level
+- [x] Calculate meeting frequency
+- [x] Calculate task completion rate
+- [x] Generate relationship health score
+- [x] Show active relationships
+- [x] Show at-risk relationships
+- [x] Show strong relationships
+- [x] Deliver: relationship analytics (backend + UI implemented)
+
+Note: Relationship metrics are updated on meeting/action-item create/edit/delete. Remaining work: add dedicated tests and update docs/changelog.
 
 ## Phase 8: AI Meeting Preparation Engine
 - [ ] Load participant profile before meeting
