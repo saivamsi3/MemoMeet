@@ -1,3 +1,41 @@
-.meeting-card {
-    border-left: 4px solid #0d6efd;
+/* Meeting Cards */
+.meeting-row {
+    transition: background-color var(--transition-speed) ease;
+}
+
+.meeting-indicator-primary {
+    border-left: 4px solid var(--primary) !important;
+}
+
+/* Overlapping Avatars for Meetings List */
+.avatar-group {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.avatar-group-item {
+    margin-right: -12px;
+    border: 2px solid var(--bg-card);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) var(--transition-bounce), z-index var(--transition-speed) ease;
+    cursor: default;
+    position: relative;
+}
+
+.avatar-group-item:hover {
+    transform: translateY(-4px) scale(1.12);
+    z-index: 50 !important;
+}
+
+/* Styled text formatting for meeting details */
+.meeting-well {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    white-space: pre-line;
 }

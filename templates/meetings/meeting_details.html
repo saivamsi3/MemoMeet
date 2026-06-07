@@ -1,61 +1,159 @@
 {% extends "layout/base.html" %}
 {% block title %}{{ meeting.title }}{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/meetings.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item"><a href="{{ url_for('meetings.list_meetings') }}">Meetings</a></li>
 <li class="breadcrumb-item active">{{ meeting.title }}</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{ meeting.title }}</h1>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <div>
-        <a href="{{ url_for('meetings.edit_meeting', id=meeting.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
-        <a href="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}" class="btn btn-outline-info"><i class="bi bi-file-text"></i> Report</a>
+        <h1 class="h2 mb-1">{{ meeting.title }}</h1>
+        <div class="text-secondary small d-flex align-items-center gap-2">
+            <i class="bi bi-calendar3"></i> {{ meeting.date.strftime('%B %d, %Y') }}
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('meetings.edit_meeting', id=meeting.id) }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+            <i class="bi bi-pencil"></i> Edit Meeting
+        </a>
+        <a href="{{ url_for('reports.preparation_report', meeting_id=meeting.id) }}" class="btn btn-outline-info d-inline-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-text"></i> Prep Report
+        </a>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <div class="card">
-            <div class="card-header">Meeting Info</div>
+<div class="row g-4 mb-4">
+    <!-- Left Column: Primary meeting info and participants -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <h5 class="mb-0 font-heading"><i class="bi bi-people-fill me-2 text-primary"></i>Participants</h5>
+            </div>
             <div class="card-body">
-                <p><strong>Date:</strong> {{ meeting.date.strftime('%B %d, %Y') }}</p>
-                <p><strong>Participants:</strong></p>
-                <ul>
-                    {% for mp in meeting.participants %}
-                        <li><a href="{{ url_for('participants.participant_details', id=mp.participant.id) }}">{{ mp.participant.name }}</a></li>
-                    {% endfor %}
-                </ul>
+                {% if meeting.participants %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for mp in meeting.participants %}
+                            {# Generate deterministic avatar gradient #}
+                            {% set grad_idx = mp.participant.id % 5 %}
+                            {% if grad_idx == 0 %}
+                                {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+                            {% elif grad_idx == 1 %}
+                                {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+                            {% elif grad_idx == 2 %}
+                                {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+                            {% elif grad_idx == 3 %}
+                                {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+                            {% else %}
+                                {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+                            {% endif %}
+                            
+                            {# Extract initials #}
+                            {% set parts = mp.participant.name.split() %}
+                            {% set initials = parts[0][0] | upper %}
+                            {% if parts | length > 1 %}
+                                {% set initials = initials + parts[1][0] | upper %}
+                            {% endif %}
+
+                            <a href="{{ url_for('participants.participant_details', id=mp.participant.id) }}" class="d-flex align-items-center gap-3 p-2 rounded hover-bg-light text-decoration-none text-dark border transition-all">
+                                <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading fw-bold" style="background: {{ gradient }}; width: 36px; height: 36px; border-radius: 50%; font-size: 0.85rem;">
+                                    {{ initials }}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="mb-0 text-truncate">{{ mp.participant.name }}</h6>
+                                    {% if mp.participant.role %}
+                                        <small class="text-muted text-truncate d-block">{{ mp.participant.role }}</small>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-person-dash fs-2 d-block mb-2 text-secondary"></i>
+                        No linked participants.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Discussion Details -->
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <h5 class="mb-0 font-heading"><i class="bi bi-chat-right-text-fill me-2 text-primary"></i>Discussion & Summary</h5>
+            </div>
+            <div class="card-body">
+                {% if meeting.discussion_summary %}
+                    <div class="meeting-well mb-4">
+                        {{ meeting.discussion_summary }}
+                    </div>
+                {% else %}
+                    <div class="text-muted py-3">No discussion summary entered. Click Edit to add details.</div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
 
-{% if meeting.discussion_summary %}
-    <div class="card mb-3">
-        <div class="card-header">Discussion Summary</div>
-        <div class="card-body">{{ meeting.discussion_summary }}</div>
+<div class="row g-4 mb-4">
+    <!-- Key Decisions -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100 border-start border-4 border-success">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <h5 class="mb-0 font-heading text-success"><i class="bi bi-check-circle-fill me-2"></i>Key Decisions</h5>
+            </div>
+            <div class="card-body">
+                {% if meeting.key_decisions %}
+                    <div class="meeting-well">
+                        {{ meeting.key_decisions }}
+                    </div>
+                {% else %}
+                    <div class="text-muted py-3">No decisions recorded.</div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-{% endif %}
 
-{% if meeting.key_decisions %}
-    <div class="card mb-3">
-        <div class="card-header">Key Decisions</div>
-        <div class="card-body">{{ meeting.key_decisions }}</div>
+    <!-- Action Items -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100 border-start border-4 border-warning">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <h5 class="mb-0 font-heading text-warning"><i class="bi bi-list-task me-2"></i>Action Items</h5>
+            </div>
+            <div class="card-body">
+                {% if meeting.action_items %}
+                    <div class="meeting-well">
+                        {{ meeting.action_items }}
+                    </div>
+                {% else %}
+                    <div class="text-muted py-3">No action items recorded.</div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-{% endif %}
+</div>
 
-{% if meeting.action_items %}
-    <div class="card mb-3">
-        <div class="card-header">Action Items</div>
-        <div class="card-body">{{ meeting.action_items }}</div>
+<!-- Participant Observations -->
+<div class="card shadow-sm border-0 mb-5 border-start border-4 border-info">
+    <div class="card-header bg-transparent py-3 border-bottom">
+        <h5 class="mb-0 font-heading text-info"><i class="bi bi-journal-text me-2"></i>Participant Observations</h5>
     </div>
-{% endif %}
-
-{% if meeting.participant_observations %}
-    <div class="card mb-3">
-        <div class="card-header">Participant Observations</div>
-        <div class="card-body">{{ meeting.participant_observations }}</div>
+    <div class="card-body">
+        {% if meeting.participant_observations %}
+            <div class="meeting-well">
+                {{ meeting.participant_observations }}
+            </div>
+        {% else %}
+            <div class="text-muted py-3">No observations recorded.</div>
+        {% endif %}
     </div>
-{% endif %}
+</div>
 {% endblock %}

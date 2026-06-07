@@ -1,53 +1,122 @@
 {% extends "layout/base.html" %}
 {% block title %}Create Meeting{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/meetings.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item"><a href="{{ url_for('meetings.list_meetings') }}">Meetings</a></li>
 <li class="breadcrumb-item active">Create</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2">Create Meeting</h1>
 </div>
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <i class="bi bi-calendar-plus-fill me-2 text-primary"></i>Meeting Details & Insights
+            </div>
+            <div class="card-body p-4">
                 <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Title *</label>
-                        <input type="text" name="title" class="form-control" required>
+                    <!-- Title & Date -->
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold">Meeting Title *</label>
+                            <input type="text" name="title" class="form-control form-control-lg" placeholder="e.g. Q3 Strategic Planning Review" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Date *</label>
+                            <input type="date" name="date" class="form-control form-control-lg" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date *</label>
-                        <input type="date" name="date" class="form-control" required>
+
+                    <!-- Participants Grid Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold d-block">Participants</label>
+                        {% if participants %}
+                            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
+                                    {% for p in participants %}
+                                        {# Generate deterministic avatar gradient #}
+                                        {% set grad_idx = p.id % 5 %}
+                                        {% if grad_idx == 0 %}
+                                            {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+                                        {% elif grad_idx == 1 %}
+                                            {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+                                        {% elif grad_idx == 2 %}
+                                            {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+                                        {% elif grad_idx == 3 %}
+                                            {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+                                        {% else %}
+                                            {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+                                        {% endif %}
+                                        
+                                        {# Extract initials #}
+                                        {% set parts = p.name.split() %}
+                                        {% set initials = parts[0][0] | upper %}
+                                        {% if parts | length > 1 %}
+                                            {% set initials = initials + parts[1][0] | upper %}
+                                        {% endif %}
+
+                                        <div class="col">
+                                            <div class="form-check d-flex align-items-center gap-2 p-2 border rounded bg-white hover-shadow-sm transition-all" style="cursor: pointer;">
+                                                <input class="form-check-input ms-0 me-2" type="checkbox" name="participants" value="{{ p.id }}" id="participant{{ p.id }}">
+                                                <label class="form-check-label d-flex align-items-center gap-2 w-100 style-cursor" for="participant{{ p.id }}">
+                                                    <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading" style="background: {{ gradient }}; width: 28px; height: 28px; border-radius: 50%; font-size: 0.75rem; font-weight: bold;">
+                                                        {{ initials }}
+                                                    </div>
+                                                    <span class="text-truncate" style="max-width: 140px; font-size: 0.9rem;">{{ p.name }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning mb-0 border-0 shadow-sm d-flex align-items-center gap-3">
+                                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
+                                <div>
+                                    No participants found. <a href="{{ url_for('participants.add_participant') }}" class="alert-link">Create a participant profile first</a> to link them to this meeting.
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Participants</label>
-                        <select name="participants" class="form-select" multiple>
-                            {% for p in participants %}
-                                <option value="{{ p.id }}">{{ p.name }}</option>
-                            {% endfor %}
-                        </select>
+
+                    <hr class="my-4 text-muted">
+
+                    <!-- Summaries & Fields Grid -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Discussion Summary</label>
+                            <textarea name="discussion_summary" class="form-control" rows="4" placeholder="Briefly describe what was discussed during the meeting..."></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Key Decisions</label>
+                            <textarea name="key_decisions" class="form-control" rows="4" placeholder="List the critical decisions made in the meeting..."></textarea>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Discussion Summary</label>
-                        <textarea name="discussion_summary" class="form-control" rows="4"></textarea>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Action Items</label>
+                            <textarea name="action_items" class="form-control" rows="4" placeholder="Detail action items, assignees, and deadlines..."></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Participant Observations</label>
+                            <textarea name="participant_observations" class="form-control" rows="4" placeholder="Note down details like mood, level of engagement, or personal updates..."></textarea>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Key Decisions</label>
-                        <textarea name="key_decisions" class="form-control" rows="3"></textarea>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-1"></i> Create Meeting</button>
+                        <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Action Items</label>
-                        <textarea name="action_items" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Participant Observations</label>
-                        <textarea name="participant_observations" class="form-control" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Create Meeting</button>
-                    <a href="{{ url_for('meetings.list_meetings') }}" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
         </div>

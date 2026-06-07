@@ -12,8 +12,19 @@ meetings_bp = Blueprint("meetings", __name__)
 @meetings_bp.route("/meetings")
 @login_required
 def list_meetings():
-    meetings = Meeting.query.filter_by(user_id=current_user.id).order_by(Meeting.date.desc()).all()
-    return render_template("meetings/meetings.html", meetings=meetings)
+    search = request.args.get("search", "")
+    query = Meeting.query.filter_by(user_id=current_user.id)
+    if search:
+        query = query.outerjoin(MeetingParticipant).outerjoin(Participant).filter(
+            (Meeting.title.ilike(f"%{search}%")) |
+            (Meeting.discussion_summary.ilike(f"%{search}%")) |
+            (Meeting.key_decisions.ilike(f"%{search}%")) |
+            (Meeting.action_items.ilike(f"%{search}%")) |
+            (Meeting.participant_observations.ilike(f"%{search}%")) |
+            (Participant.name.ilike(f"%{search}%"))
+        ).distinct()
+    meetings = query.order_by(Meeting.date.desc()).all()
+    return render_template("meetings/meetings.html", meetings=meetings, search=search)
 
 
 @meetings_bp.route("/meetings/create", methods=["GET", "POST"])
@@ -56,6 +67,7 @@ def meeting_details(id):
 def edit_meeting(id):
     meeting = Meeting.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     participants = Participant.query.filter_by(user_id=current_user.id).all()
+    selected_participant_ids = [mp.participant_id for mp in meeting.participants]
     if request.method == "POST":
         meeting.title = request.form.get("title")
         meeting.date = datetime.strptime(request.form.get("date"), "%Y-%m-%d")
@@ -71,7 +83,7 @@ def edit_meeting(id):
         db.session.commit()
         flash("Meeting updated", "success")
         return redirect(url_for("meetings.list_meetings"))
-    return render_template("meetings/edit_meeting.html", meeting=meeting, participants=participants)
+    return render_template("meetings/edit_meeting.html", meeting=meeting, participants=participants, selected_participant_ids=selected_participant_ids)
 
 
 @meetings_bp.route("/meetings/<int:id>/delete")
