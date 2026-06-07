@@ -4,7 +4,6 @@ from models.meeting import Meeting
 from models.participant import Participant
 from models.memory import Memory
 from models.action_item import ActionItem
-from models.relationship import Relationship
 from datetime import datetime, timezone
 
 
@@ -16,7 +15,6 @@ class AnalyticsService:
             "total_meetings": Meeting.query.filter_by(user_id=user_id).count(),
             "total_memories": Memory.query.filter_by(user_id=user_id).count(),
             "pending_tasks": ActionItem.query.filter_by(user_id=user_id, status="Pending").count(),
-            "relationships": Relationship.query.filter_by(user_id=user_id).count(),
         }
 
     @staticmethod

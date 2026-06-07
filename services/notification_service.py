@@ -30,9 +30,7 @@ class NotificationService:
     @staticmethod
     def generate_smart_alerts(user_id):
         from datetime import datetime, timezone
-        from models.user import User
         from models.action_item import ActionItem
-        from models.relationship import Relationship
         from models.participant import Participant
         from models.meeting_participant import MeetingParticipant
         from models.meeting import Meeting
@@ -101,23 +99,3 @@ class NotificationService:
                                 title=title,
                                 message=message
                             )
-
-        # 4. Generate Declining Engagement alerts
-        relationships = Relationship.query.filter_by(user_id=user_id).all()
-        for r in relationships:
-            if r.health_score < 4.0 or r.engagement_level < 0.3:
-                title = f"Declining Engagement: {r.participant.name}"
-                existing = Notification.query.filter_by(
-                    user_id=user_id,
-                    notification_type="declining_engagement",
-                    title=title
-                ).first()
-                if not existing:
-                    message = f"Relationship health score with {r.participant.name} is low ({r.health_score:.1f}/10.0). Engagement level is {r.engagement_level * 100:.1f}%. Consider scheduling a catch-up."
-                    NotificationService.create(
-                        user_id=user_id,
-                        notification_type="declining_engagement",
-                        title=title,
-                        message=message
-                    )
-

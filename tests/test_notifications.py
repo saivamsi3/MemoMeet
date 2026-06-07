@@ -6,7 +6,6 @@ from models.meeting import Meeting
 from models.participant import Participant
 from models.meeting_participant import MeetingParticipant
 from models.action_item import ActionItem
-from models.relationship import Relationship
 from models.notification import Notification
 from services.notification_service import NotificationService
 from services.action_item_service import ActionItemService
@@ -108,33 +107,6 @@ def test_missed_followup_alert(app):
         notifications = Notification.query.filter_by(
             user_id=user.id,
             notification_type="missed_followup"
-        ).all()
-        assert len(notifications) == 1
-        assert "Sarah Connor" in notifications[0].title
-
-
-def test_declining_engagement_alert(app):
-    with app.app_context():
-        user = User.query.filter_by(username="test").first()
-        p = Participant.query.filter_by(name="Sarah Connor").first()
-
-        # Create a low health score relationship
-        rel = Relationship(
-            user_id=user.id,
-            participant_id=p.id,
-            health_score=3.5,
-            engagement_level=0.2
-        )
-        db.session.add(rel)
-        db.session.commit()
-
-        # Run alert generator
-        NotificationService.generate_smart_alerts(user_id=user.id)
-
-        # Check notification
-        notifications = Notification.query.filter_by(
-            user_id=user.id,
-            notification_type="declining_engagement"
         ).all()
         assert len(notifications) == 1
         assert "Sarah Connor" in notifications[0].title
