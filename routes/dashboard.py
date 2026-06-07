@@ -36,11 +36,14 @@ def index():
     ).order_by(ActionItem.deadline.asc().nullslast()).limit(5).all()
 
     from datetime import datetime, timezone
+    from sqlalchemy import or_
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
     upcoming_deadlines = ActionItem.query.filter(
         ActionItem.user_id == current_user.id,
-        ActionItem.status.in_(["Pending", "In Progress"]),
-        ActionItem.deadline >= today_start
+        or_(
+            ActionItem.status == "Overdue",
+            (ActionItem.status.in_(["Pending", "In Progress"]) & (ActionItem.deadline >= today_start))
+        )
     ).order_by(ActionItem.deadline.asc()).limit(5).all()
 
     completed_action_items = ActionItem.query.filter_by(
