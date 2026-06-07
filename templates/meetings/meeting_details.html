@@ -129,7 +129,7 @@
                                 {% set initials = initials + parts[1][0] | upper %}
                             {% endif %}
 
-                            <a href="{{ url_for('participants.participant_details', id=mp.participant.id) }}" class="d-flex align-items-center gap-3 p-2 rounded hover-bg-light text-decoration-none text-dark border transition-all">
+                            <a href="{{ url_for('participants.participant_details', id=mp.participant.id) }}" class="d-flex align-items-center gap-3 p-2 rounded text-decoration-none hover-card-link transition-all">
                                 <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading fw-bold" style="background: {{ gradient }}; width: 36px; height: 36px; border-radius: 50%; font-size: 0.85rem;">
                                     {{ initials }}
                                 </div>

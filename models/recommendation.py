@@ -13,6 +13,7 @@ class Recommendation(db.Model):
     priority = db.Column(db.String(20), default="medium")
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    participant = db.relationship("Participant", backref="recommendations", lazy=True)
 
     def __repr__(self):
         return f"<Recommendation {self.recommendation_type}>"

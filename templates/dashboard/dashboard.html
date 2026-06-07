@@ -53,7 +53,7 @@
             <div class="card-body p-0">
                 <div class="stat-num">{{ memories_count }}</div>
                 <div class="stat-label">Memories</div>
-                <i class="bi bi-brain stat-icon"></i>
+                <i class="bi bi-cpu stat-icon"></i>
             </div>
         </div>
     </div>
@@ -87,7 +87,7 @@
                                     <h6 class="mb-1 text-truncate font-heading">{{ meeting.title }}</h6>
                                     <span class="text-secondary small"><i class="bi bi-clock me-1"></i>{{ meeting.date.strftime('%Y-%m-%d') }}</span>
                                 </div>
-                                <span class="badge bg-light text-primary border border-primary-subtle px-2 py-1.5"><i class="bi bi-chevron-right"></i></span>
+                                <span class="btn-chevron"><i class="bi bi-chevron-right"></i></span>
                             </a>
                         {% endfor %}
                     </div>
@@ -124,7 +124,7 @@
                     </div>
                 {% else %}
                     <div class="text-center py-5">
-                        <i class="bi bi-brain text-muted" style="font-size: 2.5rem;"></i>
+                        <i class="bi bi-cpu text-muted" style="font-size: 2.5rem;"></i>
                         <p class="text-muted mt-3">No memory insights loaded yet.</p>
                         <span class="text-muted small">Memories generate after running Gemini analysis on your meeting summaries.</span>
                     </div>

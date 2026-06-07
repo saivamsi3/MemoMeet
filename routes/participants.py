@@ -76,7 +76,9 @@ def participant_details(id):
     # load related meetings and relationship data
     meetings = TimelineService.get_meetings_for_participant(participant.id, current_user.id)
     relationship = Relationship.query.filter_by(participant_id=participant.id, user_id=current_user.id).first()
-    return render_template("participants/participant_details.html", participant=participant, meetings=meetings, relationship=relationship)
+    from models.action_item import ActionItem
+    action_items = ActionItem.query.filter_by(participant_id=participant.id, user_id=current_user.id).all()
+    return render_template("participants/participant_details.html", participant=participant, meetings=meetings, relationship=relationship, action_items=action_items)
 
 
 @participants_bp.route("/participants/<int:id>/delete")

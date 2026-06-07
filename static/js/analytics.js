@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Configure dynamic Chart.js defaults based on active theme
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor = isDark ? '#cbd5e1' : '#475569';
+    const gridColor = isDark ? '#1f2937' : '#e2e8f0';
+
+    Chart.defaults.color = textColor;
+    if (Chart.defaults.scale && Chart.defaults.scale.grid) {
+        Chart.defaults.scale.grid.color = gridColor;
+    }
+    if (Chart.defaults.scale && Chart.defaults.scale.ticks) {
+        Chart.defaults.scale.ticks.color = textColor;
+    }
+    if (Chart.defaults.plugins && Chart.defaults.plugins.legend && Chart.defaults.plugins.legend.labels) {
+        Chart.defaults.plugins.legend.labels.color = textColor;
+    }
+
     // 1. Task Chart
     const taskCanvas = document.getElementById('taskChart');
     if (taskCanvas) {

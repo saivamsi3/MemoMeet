@@ -10,7 +10,7 @@
     top: 0;
     bottom: -1.5rem;
     width: 2px;
-    background: #dee2e6;
+    background: var(--border-color);
 }
 .timeline-item::after {
     content: '';
@@ -20,5 +20,5 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #0d6efd;
+    background: var(--primary);
 }

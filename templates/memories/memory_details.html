@@ -30,7 +30,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
-                <div class="card-header bg-light py-3 border-0">
+                <div class="card-header py-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="badge text-uppercase py-2 px-3 fs-7 bg-{{ 'primary' if memory.memory_type == 'fact' else 'warning' if memory.memory_type == 'concern' else 'success' if memory.memory_type == 'goal' else 'info' if memory.memory_type == 'commitment' else 'secondary' if memory.memory_type == 'preference' else 'dark' }}">
                             {{ memory.memory_type }}
@@ -47,20 +47,20 @@
                 <div class="card-body p-4">
                     <h5 class="text-muted small text-uppercase mb-3 fw-bold tracking-wider">Memory Content</h5>
                     <blockquote class="blockquote border-start border-4 border-{{ 'primary' if memory.memory_type == 'fact' else 'warning' if memory.memory_type == 'concern' else 'success' if memory.memory_type == 'goal' else 'info' if memory.memory_type == 'commitment' else 'secondary' if memory.memory_type == 'preference' else 'dark' }} ps-3 py-1 mb-4">
-                        <p class="fs-5 text-dark mb-0 fw-normal" style="line-height: 1.6;">{{ memory.content }}</p>
+                        <p class="fs-5 text-body mb-0 fw-normal" style="line-height: 1.6;">{{ memory.content }}</p>
                     </blockquote>
 
                     <h5 class="text-muted small text-uppercase mb-3 fw-bold tracking-wider pt-3">Linked Context</h5>
                     <div class="list-group list-group-flush">
                         <!-- Participant -->
                         <div class="list-group-item px-0 py-3 border-0 border-bottom d-flex align-items-center">
-                            <div class="bg-light rounded-3 p-2 me-3 text-secondary" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <div class="rounded-3 p-2 me-3 text-secondary border d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--bg-secondary); border-color: var(--border-color) !important;">
                                 <i class="bi bi-person fs-5"></i>
                             </div>
                             <div>
                                 <div class="text-muted small">Participant</div>
                                 {% if memory.participant %}
-                                    <a href="{{ url_for('participants.participant_details', id=memory.participant.id) }}" class="fw-semibold text-decoration-none text-dark">
+                                    <a href="{{ url_for('participants.participant_details', id=memory.participant.id) }}" class="fw-semibold text-decoration-none text-primary">
                                         {{ memory.participant.name }}
                                     </a>
                                 {% else %}
@@ -71,12 +71,12 @@
 
                         <!-- Meeting Source -->
                         <div class="list-group-item px-0 py-3 border-0 border-bottom d-flex align-items-center">
-                            <div class="bg-light rounded-3 p-2 me-3 text-secondary" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <div class="rounded-3 p-2 me-3 text-secondary border d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--bg-secondary); border-color: var(--border-color) !important;">
                                 <i class="bi bi-calendar-event fs-5"></i>
                             </div>
                             <div>
                                 <div class="text-muted small">Meeting Source</div>
-                                <a href="{{ url_for('meetings.meeting_details', id=memory.meeting.id) }}" class="fw-semibold text-decoration-none text-dark">
+                                <a href="{{ url_for('meetings.meeting_details', id=memory.meeting.id) }}" class="fw-semibold text-decoration-none text-primary">
                                     {{ memory.meeting.title }}
                                 </a>
                                 <span class="text-muted small ms-2">({{ memory.meeting.date.strftime('%B %d, %Y') }})</span>
@@ -85,12 +85,12 @@
 
                         <!-- Created Timestamp -->
                         <div class="list-group-item px-0 py-3 border-0 d-flex align-items-center">
-                            <div class="bg-light rounded-3 p-2 me-3 text-secondary" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <div class="rounded-3 p-2 me-3 text-secondary border d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--bg-secondary); border-color: var(--border-color) !important;">
                                 <i class="bi bi-clock fs-5"></i>
                             </div>
                             <div>
                                 <div class="text-muted small">Recorded At</div>
-                                <span class="fw-semibold text-dark">{{ memory.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                                <span class="fw-semibold text-body">{{ memory.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
                             </div>
                         </div>
                     </div>

@@ -8,12 +8,12 @@
     border-radius: 8px;
 }
 .chat-message.user {
-    background: #0d6efd;
+    background: var(--primary);
     color: white;
     margin-left: 20%;
 }
 .chat-message.bot {
     background: var(--bg-primary);
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     margin-right: 20%;
 }
