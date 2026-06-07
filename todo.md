@@ -81,35 +81,35 @@ Checklist generated from `plan.md`.
 - [x] Deliver: AI meeting analysis (analyze endpoint added)
 
 ## Phase 5: Memory Engine
-- [ ] Implement fact memory
-- [ ] Implement preference memory
-- [ ] Implement goal memory
-- [ ] Implement concern memory
-- [ ] Implement commitment memory
-- [ ] Implement decision memory
-- [ ] Store memory content
-- [ ] Link memory to participant
-- [ ] Link memory to meeting source
-- [ ] Store importance score
-- [ ] Store timestamp
-- [ ] Create memory dashboard
-- [ ] Create memory detail page
-- [ ] Create memory filters
-- [ ] Deliver: long-term memory system
+- [x] Implement fact memory
+- [x] Implement preference memory
+- [x] Implement goal memory
+- [x] Implement concern memory
+- [x] Implement commitment memory
+- [x] Implement decision memory
+- [x] Store memory content
+- [x] Link memory to participant
+- [x] Link memory to meeting source
+- [x] Store importance score
+- [x] Store timestamp
+- [x] Create memory dashboard
+- [x] Create memory detail page
+- [x] Create memory filters
+- [x] Deliver: long-term memory system
 
 ## Phase 6: Action Item Tracking
-- [ ] Store task
-- [ ] Store owner
-- [ ] Store deadline
-- [ ] Store status
-- [ ] Support status: Pending
-- [ ] Support status: In Progress
-- [ ] Support status: Completed
-- [ ] Support status: Overdue
-- [ ] Show pending tasks on dashboard
-- [ ] Show upcoming deadlines on dashboard
-- [ ] Show completed tasks on dashboard
-- [ ] Deliver: commitment tracking
+- [x] Store task
+- [x] Store owner
+- [x] Store deadline
+- [x] Store status
+- [x] Support status: Pending
+- [x] Support status: In Progress
+- [x] Support status: Completed
+- [x] Support status: Overdue
+- [x] Show pending tasks on dashboard
+- [x] Show upcoming deadlines on dashboard
+- [x] Show completed tasks on dashboard
+- [x] Deliver: commitment tracking
 
 ## Phase 7: Relationship Intelligence Engine
 - [ ] Calculate number of meetings

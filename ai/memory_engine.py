@@ -9,12 +9,19 @@ class MemoryEngine:
         self.gemini = GeminiService()
 
     def extract_memories(self, meeting):
+        participants_list = []
+        for mp in meeting.participants:
+            if mp.participant:
+                participants_list.append(mp.participant.name)
+        participants_str = ", ".join(participants_list) if participants_list else "None"
+
         if not self.gemini.is_available():
             return self._fallback_extract(meeting)
 
         prompt = ANALYSIS_PROMPT.format(
             title=meeting.title,
             date=meeting.date.strftime("%Y-%m-%d"),
+            participants=participants_str,
             summary=meeting.discussion_summary or "",
             decisions=meeting.key_decisions or "",
             actions=meeting.action_items or "",
@@ -51,6 +58,13 @@ class MemoryEngine:
             "GOALS:": "goal", "COMMITMENTS:": "commitment",
             "PREFERENCES:": "preference", "DECISIONS:": "decision",
         }
+        
+        participants_map = {}
+        for mp in meeting.participants:
+            if mp.participant:
+                name = mp.participant.name.strip()
+                participants_map[name.lower()] = mp.participant.id
+
         for line in result.split("\n"):
             line = line.strip()
             if line in type_map:
@@ -58,9 +72,35 @@ class MemoryEngine:
             elif line.startswith("*") or line.startswith("-"):
                 content = line.lstrip("*- ").strip()
                 if content and current_type:
+                    participant_id = None
+                    if content.startswith("[") and "]" in content:
+                        parts = content.split("]", 1)
+                        attrib = parts[0][1:].strip()
+                        rest_content = parts[1].strip()
+                        if rest_content.startswith(":"):
+                            rest_content = rest_content[1:].strip()
+                        
+                        attrib_lower = attrib.lower()
+                        if attrib_lower == "general":
+                            content = rest_content
+                        elif attrib_lower in participants_map:
+                            participant_id = participants_map[attrib_lower]
+                            content = rest_content
+                        else:
+                            matched = False
+                            for p_name, p_id in participants_map.items():
+                                if p_name in attrib_lower or attrib_lower in p_name:
+                                    participant_id = p_id
+                                    content = rest_content
+                                    matched = True
+                                    break
+                            if not matched:
+                                pass
+
                     memories.append({
                         "type": current_type,
                         "content": content,
+                        "participant_id": participant_id,
                         "importance": 0.7 if current_type in ("decision", "commitment") else 0.5,
                     })
         return memories
@@ -72,7 +112,7 @@ class MemoryEngine:
             m = Memory(
                 meeting_id=meeting.id,
                 user_id=meeting.user_id,
-                participant_id=participant_id,
+                participant_id=mem.get("participant_id") or participant_id,
                 memory_type=mem["type"],
                 content=mem["content"],
                 importance_score=mem.get("importance", 0.5),
