@@ -1,180 +1,297 @@
 {% extends "layout/base.html" %}
 {% block title %}Analytics{% endblock %}
+
+{% block extra_css %}
+<style>
+    .kpi-card {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-card);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform var(--transition-speed) var(--transition-bounce), box-shadow var(--transition-speed) ease;
+    }
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: rgba(var(--primary-rgb), 0.4);
+    }
+    .kpi-icon {
+        font-size: 2.25rem;
+        opacity: 0.15;
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-primary);
+    }
+    .insight-item {
+        border-left: 4px solid var(--border-color);
+        background-color: var(--bg-secondary);
+        border-radius: var(--radius-sm);
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    .insight-item:hover {
+        transform: translateX(4px);
+    }
+    .insight-item.danger { border-left-color: var(--color-decision, #dc3545); }
+    .insight-item.warning { border-left-color: var(--color-concern, #fd7e14); }
+    .insight-item.info { border-left-color: var(--primary, #6366f1); }
+    .insight-item.success { border-left-color: var(--color-goal, #198754); }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Home</a></li>
 <li class="breadcrumb-item active">Analytics</li>
 {% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Analytics Dashboard</h1>
-</div>
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+        <h1 class="h2 font-heading">Analytics Dashboard</h1>
+    </div>
 
-<div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-primary h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ total_participants }}</h5>
-                <p class="card-text">Participants</p>
+    <!-- 1. KPI Stats Cards Grid -->
+    <div class="row g-3 mb-4">
+        <!-- Participants -->
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card h-100">
+                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Total Contacts</h6>
+                <h2 class="mb-0 fw-bold font-heading">{{ total_participants }}</h2>
+                <i class="bi bi-people kpi-icon"></i>
+            </div>
+        </div>
+        <!-- Meetings -->
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card h-100">
+                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Total Meetings</h6>
+                <h2 class="mb-0 fw-bold font-heading">{{ total_meetings }}</h2>
+                <i class="bi bi-calendar-event kpi-icon"></i>
+            </div>
+        </div>
+        <!-- Average Health Score -->
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card h-100">
+                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Avg Relationship Health</h6>
+                {% set sum_scores = namespace(value=0) %}
+                {% set count_rels = relationships|length %}
+                {% for r in relationships %}
+                    {% set sum_scores.value = sum_scores.value + r.health_score %}
+                {% endfor %}
+                {% set avg_score = (sum_scores.value / count_rels) if count_rels > 0 else 0.0 %}
+                <h2 class="mb-0 fw-bold font-heading text-primary">{{ "%.1f"|format(avg_score) }}/10.0</h2>
+                <i class="bi bi-heart-fill kpi-icon"></i>
+            </div>
+        </div>
+        <!-- Pending Tasks -->
+        <div class="col-6 col-lg-3">
+            <div class="kpi-card h-100">
+                <h6 class="text-muted small text-uppercase mb-2 font-heading fw-bold">Pending Actions</h6>
+                <h2 class="mb-0 fw-bold font-heading">{{ pending + in_progress }}</h2>
+                <i class="bi bi-check2-square kpi-icon"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-success h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ total_meetings }}</h5>
-                <p class="card-text">Meetings</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-info h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ total_memories }}</h5>
-                <p class="card-text">Memories</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card text-bg-warning h-100">
-            <div class="card-body">
-                <h5 class="card-title">{{ pending + in_progress }}</h5>
-                <p class="card-text">Open Tasks</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Task Overview</div>
-            <div class="card-body">
-                <canvas id="taskChart"></canvas>
-            </div>
+    <!-- 2. AI-Powered Dynamic Relationship Insights -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-transparent border-bottom py-3">
+            <h5 class="mb-0 fw-bold text-primary font-heading"><i class="bi bi-robot me-2"></i>AI Actionable Relationship Insights</h5>
         </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Relationship Scores</div>
-            <div class="card-body">
-                {% if relationships %}
-                    <canvas id="relationshipChart"></canvas>
-                    <div class="mt-3">
-                        <h6>Top Strong Relationships</h6>
-                        <ul class="list-group list-group-flush">
-                            {% set sorted_rels = relationships|sort(attribute='health_score', reverse=True) %}
-                            {% for r in sorted_rels[:5] %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ r.participant.name }}</strong>
-                                        <div class="text-muted small">Meetings: {{ r.meeting_count }}</div>
-                                    </div>
-                                    <span class="badge bg-primary rounded-pill">{{ "%.1f"|format(r.health_score) }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% else %}
-                    <p class="text-muted">No relationship data yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">Upcoming Meetings</div>
-            <div class="card-body">
-                {% if upcoming_meetings %}
-                    <ul class="list-group list-group-flush">
-                        {% for m in upcoming_meetings %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ m.title }}</strong>
-                                    <div class="text-muted small">{{ m.date.strftime('%b %d, %Y %H:%M') if m.date }}</div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-12">
+                    {% for insight in ai_insights %}
+                        <div class="insight-item {{ insight.type }} d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-4 text-{{ insight.type }}"><i class="bi {{ insight.icon }}"></i></span>
+                                <span class="text-secondary small fw-medium">{{ insight.message }}</span>
+                            </div>
+                            {% if insight.participant %}
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('participants.participant_details', id=insight.participant.id) }}" class="btn btn-sm btn-primary">Check Profile</a>
                                 </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="small text-muted me-1">Participants:</span>
-                                    <div class="avatar-group">
-                                        {% for mp in m.participants %}
-                                            {% set grad_idx = mp.participant.id % 5 %}
-                                            {% if grad_idx == 0 %}
-                                                {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
-                                            {% elif grad_idx == 1 %}
-                                                {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
-                                            {% elif grad_idx == 2 %}
-                                                {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
-                                            {% elif grad_idx == 3 %}
-                                                {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
-                                            {% else %}
-                                                {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Relationship Health Matrix -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-primary font-heading"><i class="bi bi-grid-3x3-gap me-2"></i>Relationship Metrics Matrix</h5>
+            <span class="badge bg-secondary-subtle text-primary border rounded-pill">{{ count_rels }} Active Profiles</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Contact</th>
+                            <th>Health Score</th>
+                            <th>Engagement Level</th>
+                            <th>Meeting count</th>
+                            <th>Action completion</th>
+                            <th class="pe-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in relationships %}
+                            {# Generate deterministic gradient based on ID #}
+                            {% set grad_idx = r.participant.id % 5 %}
+                            {% if grad_idx == 0 %}
+                                {% set gradient = "linear-gradient(135deg, #6366f1, #a855f7)" %}
+                            {% elif grad_idx == 1 %}
+                                {% set gradient = "linear-gradient(135deg, #3b82f6, #06b6d4)" %}
+                            {% elif grad_idx == 2 %}
+                                {% set gradient = "linear-gradient(135deg, #10b981, #3b82f6)" %}
+                            {% elif grad_idx == 3 %}
+                                {% set gradient = "linear-gradient(135deg, #f59e0b, #e11d48)" %}
+                            {% else %}
+                                {% set gradient = "linear-gradient(135deg, #ec4899, #8b5cf6)" %}
+                            {% endif %}
+                            
+                            {# Extract initials #}
+                            {% set parts = r.participant.name.split() %}
+                            {% set initials = parts[0][0] | upper %}
+                            {% if parts | length > 1 %}
+                                {% set initials = initials + parts[1][0] | upper %}
+                            {% endif %}
+                            
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-initials-sm d-flex align-items-center justify-content-center text-white font-heading fw-bold" style="background: {{ gradient }}; width: 34px; height: 34px; border-radius: 50%; font-size: 0.8rem;">
+                                            {{ initials }}
+                                        </div>
+                                        <div>
+                                            <a href="{{ url_for('participants.participant_details', id=r.participant.id) }}" class="fw-bold text-decoration-none text-primary font-heading">{{ r.participant.name }}</a>
+                                            {% if r.participant.role %}
+                                                <small class="text-muted d-block">{{ r.participant.role }}</small>
                                             {% endif %}
-                                            
-                                            {% set parts = mp.participant.name.split() %}
-                                            {% set initials = parts[0][0] | upper %}
-                                            {% if parts | length > 1 %}
-                                                {% set initials = initials + parts[1][0] | upper %}
-                                            {% endif %}
-                                            
-                                            <div class="avatar-group-item avatar-initials-xs" style="background: {{ gradient }}; z-index: {{ loop.revindex }};" title="{{ mp.participant.name }}">
-                                                {{ initials }}
-                                            </div>
-                                        {% endfor %}
-                                        {% if not m.participants %}
-                                            <span class="text-muted small">None</span>
-                                        {% endif %}
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3" style="max-width: 180px;">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }}" role="progressbar" style="width: {{ r.health_score * 10 }}%"></div>
+                                        </div>
+                                        <span class="badge bg-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }}-subtle text-{{ 'danger' if r.health_score < 4 else 'warning' if r.health_score < 7 else 'success' }} border rounded-pill">{{ "%.1f"|format(r.health_score) }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="d-inline-block rounded-circle bg-{{ 'danger' if r.engagement_level < 0.4 else 'warning' if r.engagement_level < 0.7 else 'success' }}" style="width: 8px; height: 8px;"></span>
+                                        <span class="small text-secondary">{{ (r.engagement_level * 100)|round|int }}% Engagement</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="small text-secondary fw-semibold">{{ r.meeting_count }} meetings</span>
+                                </td>
+                                <td>
+                                    <span class="small text-secondary">{{ (r.task_completion_rate * 100)|round|int }}% completion</span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a href="{{ url_for('participants.participant_details', id=r.participant.id) }}" class="btn btn-sm btn-outline-primary py-1 px-2.5 small" title="View Details">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted">No upcoming meetings scheduled.</p>
-                {% endif %}
+                        {% if not relationships %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    No active relationship metrics profiles found. Let's record meetings to sync data.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Meetings Per Month</div>
-            <div class="card-body">
-                <canvas id="meetingsChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Action Item Completion Rate (Last 6 months)</div>
-            <div class="card-body">
-                <canvas id="completionChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Participant Engagement</div>
-            <div class="card-body">
-                <canvas id="engagementChart"></canvas>
+    <!-- 4. Interactive Live Charts Section -->
+    <div class="row">
+        <!-- Task Status Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Task Status Distribution</div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
+                    <canvas id="taskChart" style="max-height: 280px; max-width: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Relationship Scores Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Contact Health Scores</div>
+                <div class="card-body">
+                    {% if relationships %}
+                        <canvas id="relationshipChart" class="w-100" style="max-height: 280px;"></canvas>
+                    {% else %}
+                        <p class="text-muted text-center py-5">No relationship data yet.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">Relationship Distribution</div>
-            <div class="card-body">
-                <canvas id="relationshipDistChart"></canvas>
+
+    <div class="row">
+        <!-- Meetings History Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Monthly Meetings Frequency</div>
+                <div class="card-body">
+                    <canvas id="meetingsChart" class="w-100" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Completion Rate Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Action Items Completion Over Time</div>
+                <div class="card-body">
+                    <canvas id="completionChart" class="w-100" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Engagement Distribution Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Contact Engagement Level %</div>
+                <div class="card-body">
+                    <canvas id="engagementChart" class="w-100" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relationship Category Distribution Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-bottom">Relationship Health Distribution</div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 320px;">
+                    <canvas id="relationshipDistChart" style="max-height: 280px; max-width: 280px;"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
 {% endblock %}
